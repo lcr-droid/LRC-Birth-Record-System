@@ -139,16 +139,45 @@ function App() {
     setSelectedRecord(null);
   };
 
+  // Helper function to capitalize text
+  const capitalizeText = (text) => {
+    if (!text) return '';
+    return text.toString().toUpperCase();
+  };
+
+  // Helper function to check if a header is a date field
+  const isDateField = (header) => {
+    const dateKeywords = ['date of registration', 'date of birth', 'date of marriage'];
+    return dateKeywords.some(keyword => header.toLowerCase().includes(keyword));
+  };
+
+  // Helper function to check if header is sex field
+  const isSexField = (header) => {
+    return header.toLowerCase().includes('sex') || header.toLowerCase().includes('gender');
+  };
+
+  // Helper function to process form data before saving
+  const processFormData = (data) => {
+    const processed = {};
+    Object.keys(data).forEach(key => {
+      let value = data[key];
+      if (!value || value.trim() === '') {
+        processed[key] = 'NOT STATED';
+      } else {
+        processed[key] = capitalizeText(value);
+      }
+    });
+    return processed;
+  };
+
   const openAddModal = () => {
     setFormData({});
     
     if (isAllBooks) {
-      // For All Registry Books, show sheet selector first
       setSelectedSheetForAdd("");
       setAddFormHeaders([]);
       setIsAddModalOpen(true);
     } else {
-      // For specific book, show form directly with that sheet's headers
       const headers = activeSheet?.data?.[0] || [];
       const emptyForm = {};
       headers.forEach(header => {
@@ -172,7 +201,6 @@ function App() {
       if (response.success && response.headers) {
         setAddFormHeaders(response.headers);
         setSelectedSheetForAdd(sheetName);
-        // Reset form data
         const emptyForm = {};
         response.headers.forEach(header => {
           emptyForm[header] = '';
@@ -200,19 +228,19 @@ function App() {
         return;
       }
       
-      const response = await api.addRecord(sheetName, formData);
+      const processedData = processFormData(formData);
+      const response = await api.addRecord(sheetName, processedData);
       
       if (response.success) {
         alert(`Record added successfully to ${sheetName}!`);
         closeAddModal();
         
-        // Refresh the current view
         if (isAllBooks) {
           await fetchAllBooks();
         } else if (activeSheet) {
           await fetchSpecificSheet(activeSheet.name);
         }
-        await fetchAllSheets(); // Update stats
+        await fetchAllSheets();
       } else {
         alert("Error: " + response.error);
       }
@@ -222,24 +250,18 @@ function App() {
   };
 
   const openEditModal = (record, rowNumber) => {
-    console.log("Opening edit modal for row:", rowNumber);
-    console.log("Record data received:", record);
-    
-    // The record already contains fullRecord which is the array of values
-    // and headers which is the array of column names
     if (record && record.fullRecord && record.headers) {
-      // Create an object mapping headers to values
       const recordObject = {};
       record.headers.forEach((header, idx) => {
-        recordObject[header] = record.fullRecord[idx] || '';
+        let value = record.fullRecord[idx] || '';
+        if (value === 'NOT STATED') value = '';
+        recordObject[header] = value;
       });
-      
-      console.log("Converted record object:", recordObject);
       
       setEditingRecord({
         ...record,
         fullRecord: recordObject,
-        originalFullRecord: record.fullRecord // Keep original for debugging
+        originalFullRecord: record.fullRecord
       });
       setEditingRowNumber(rowNumber);
       setIsEditModalOpen(true);
@@ -263,39 +285,36 @@ function App() {
         return;
       }
       
-      // Convert the object back to an array matching the header order
+      // Process the data before sending
+      const processedRecord = {};
+      Object.keys(editingRecord.fullRecord).forEach(key => {
+        let value = editingRecord.fullRecord[key];
+        if (!value || value.trim() === '') {
+          processedRecord[key] = 'NOT STATED';
+        } else {
+          processedRecord[key] = capitalizeText(value);
+        }
+      });
+      
       const headers = editingRecord.headers;
       const recordArray = [];
       for (let i = 0; i < headers.length; i++) {
         const header = headers[i];
-        if (isAllBooks && header === 'Book Name') {
-          // Skip Book Name in the array since it's not in the original sheet
-          continue;
-        }
-        recordArray.push(editingRecord.fullRecord[header] || '');
+        if (isAllBooks && header === 'Book Name') continue;
+        recordArray.push(processedRecord[header] || 'NOT STATED');
       }
       
-      // If we skipped Book Name, we need to adjust
-      let finalRecordArray = recordArray;
-      if (isAllBooks) {
-        // The original headers don't have Book Name, so recordArray is correct
-      }
-      
-      console.log(`Updating row ${editingRowNumber} in sheet ${sheetName}`);
-      console.log("Record array:", finalRecordArray);
-      
-      const response = await api.updateRecord(sheetName, editingRowNumber, finalRecordArray);
+      const response = await api.updateRecord(sheetName, editingRowNumber, recordArray);
       
       if (response.success) {
         alert("Record updated successfully!");
         closeEditModal();
-        // Refresh the current view
         if (isAllBooks) {
           await fetchAllBooks();
         } else {
           await fetchSpecificSheet(sheetName);
         }
-        await fetchAllSheets(); // Update stats
+        await fetchAllSheets();
       } else {
         alert("Error: " + response.error);
       }
@@ -327,7 +346,6 @@ function App() {
   const refreshData = async () => {
     setLoading(true);
     try {
-      // Clear local cache by refetching
       await fetchAllSheets();
       if (activeView === "sheet" && activeSheet && !isAllBooks && activeSheet.name !== "ALL REGISTRY BOOKS") {
         await fetchSpecificSheet(activeSheet.name);
@@ -445,13 +463,8 @@ function App() {
       filteredRows = filteredRows.filter(row => matchesSearch(row, searchTerm));
     }
     
-    // IMPORTANT: rowNumber should be the actual row number in Google Sheets
-    // Row 1 is headers, so data row 1 in array = row 2 in sheet
-    // We need to find the original index in the unfiltered rows
     return filteredRows.map((row, idx) => {
-      // Find the original index of this row in the full rows array
       const originalIndex = rows.findIndex(r => r === row);
-      // rowNumber = originalIndex + 2 (because row 0 in rows array = row 2 in sheet)
       const rowNumber = originalIndex + 2;
       
       return {
@@ -653,6 +666,46 @@ function App() {
     });
     
     return recentRecords.slice(-10).reverse();
+  };
+
+  // Form field renderer with special input types
+  const renderFormField = (header, value, onChange, isEdit = false) => {
+    const headerLower = header.toLowerCase();
+    
+    if (isSexField(header)) {
+      return (
+        <select
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 uppercase"
+          value={value || ''}
+          onChange={(e) => onChange(header, e.target.value)}
+        >
+          <option value="">Select Gender</option>
+          <option value="MALE">MALE</option>
+          <option value="FEMALE">FEMALE</option>
+        </select>
+      );
+    }
+    
+    if (isDateField(header)) {
+      return (
+        <input
+          type="date"
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+          value={value || ''}
+          onChange={(e) => onChange(header, e.target.value)}
+        />
+      );
+    }
+    
+    return (
+      <input
+        type="text"
+        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 uppercase"
+        placeholder={`Enter ${header}`}
+        value={value || ''}
+        onChange={(e) => onChange(header, e.target.value.toUpperCase())}
+      />
+    );
   };
 
   if (loading && !allSheets) {
@@ -1106,11 +1159,10 @@ function App() {
         )}
       </main>
 
-      {/* View Details Modal */}
+      {/* View Details Modal - Same as before */}
       {isModalOpen && selectedRecord && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 animate-fade-in">
           <div className="bg-white rounded-2xl w-full max-w-3xl max-h-[90vh] overflow-hidden shadow-2xl animate-slide-up flex flex-col" onClick={(e) => e.stopPropagation()}>
-            {/* Fixed Header */}
             <div className="bg-gradient-to-r from-blue-600 to-purple-700 text-white px-6 py-4 flex-shrink-0">
               <div className="flex justify-between items-center">
                 <div>
@@ -1125,7 +1177,6 @@ function App() {
               </div>
             </div>
             
-            {/* Scrollable Content */}
             <div className="p-6 overflow-y-auto flex-1">
               <div className="flex items-center gap-4 mb-6 pb-4 border-b border-gray-200">
                 <div className="text-6xl">
@@ -1189,14 +1240,12 @@ function App() {
               </div>
             </div>
             
-            {/* Fixed Footer */}
             <div className="px-6 py-4 border-t border-gray-200 bg-gray-50 flex justify-end gap-3 flex-shrink-0">
               <button 
                 className="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition flex items-center gap-2"
                 onClick={() => {
                   closeModal();
                   const sheetName = isAllBooks ? selectedRecord.bookName : activeSheet?.name;
-                  // Find the row number for this record
                   const rowIndex = displayRows.findIndex(r => r.childName === selectedRecord.childName);
                   const rowNumber = rowIndex !== -1 ? displayRows[rowIndex]?.rowNumber : null;
                   if (rowNumber && sheetName) {
@@ -1217,11 +1266,10 @@ function App() {
         </div>
       )}
 
-      {/* Add Record Modal */}
+      {/* Add Record Modal - With Enhanced Form Fields */}
       {isAddModalOpen && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 animate-fade-in">
           <div className="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden shadow-2xl animate-slide-up flex flex-col" onClick={(e) => e.stopPropagation()}>
-            {/* Fixed Header */}
             <div className="bg-gradient-to-r from-green-600 to-green-700 text-white px-6 py-4 flex-shrink-0">
               <div className="flex justify-between items-center">
                 <div>
@@ -1237,9 +1285,7 @@ function App() {
               </div>
             </div>
             
-            {/* Scrollable Content */}
             <div className="p-6 overflow-y-auto flex-1">
-              {/* Sheet Selector - Only show when in All Registry Books view */}
               {isAllBooks && (
                 <div className="mb-6">
                   <label className="block text-sm font-semibold text-gray-700 mb-2">📚 Select Registry Book</label>
@@ -1257,7 +1303,6 @@ function App() {
                 </div>
               )}
               
-              {/* Form Fields - Show only if a sheet is selected */}
               {((isAllBooks && selectedSheetForAdd) || (!isAllBooks && selectedSheetForAdd)) && (
                 <div>
                   <div className="mb-4 p-3 bg-blue-50 rounded-lg">
@@ -1271,13 +1316,9 @@ function App() {
                         return (
                           <div className="form-group" key={idx}>
                             <label className="block text-sm font-semibold text-gray-700 mb-2">{header}</label>
-                            <input
-                              type="text"
-                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                              placeholder={`Enter ${header}`}
-                              value={formData[header] || ''}
-                              onChange={(e) => setFormData({ ...formData, [header]: e.target.value })}
-                            />
+                            {renderFormField(header, formData[header] || '', (field, value) => {
+                              setFormData({ ...formData, [field]: value });
+                            })}
                           </div>
                         );
                       }
@@ -1295,7 +1336,6 @@ function App() {
               )}
             </div>
             
-            {/* Fixed Footer */}
             <div className="px-6 py-4 border-t border-gray-200 bg-gray-50 flex justify-end gap-3 flex-shrink-0">
               <button 
                 className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition"
@@ -1315,11 +1355,10 @@ function App() {
         </div>
       )}
 
-      {/* Edit Record Modal */}
+      {/* Edit Record Modal - With Enhanced Form Fields */}
       {isEditModalOpen && editingRecord && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 animate-fade-in">
           <div className="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden shadow-2xl animate-slide-up flex flex-col" onClick={(e) => e.stopPropagation()}>
-            {/* Fixed Header */}
             <div className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-6 py-4 flex-shrink-0">
               <div className="flex justify-between items-center">
                 <div>
@@ -1335,9 +1374,7 @@ function App() {
               </div>
             </div>
             
-            {/* Scrollable Content */}
             <div className="p-6 overflow-y-auto flex-1">
-              {/* Show which row we're editing */}
               <div className="mb-4 p-3 bg-yellow-50 rounded-lg">
                 <p className="text-sm text-yellow-700">
                   <strong>Editing Row #{editingRowNumber}</strong> in <strong>{isAllBooks ? editingRecord.bookName : activeSheet?.name}</strong>
@@ -1347,26 +1384,18 @@ function App() {
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {editingRecord.headers?.map((header, idx) => {
-                  // Skip Book Name header if in All Books view
                   if (isAllBooks && header === 'Book Name') return null;
                   if (header && header.trim()) {
-                    // Get the value from the fullRecord object
                     const value = editingRecord.fullRecord?.[header] || '';
                     
                     return (
                       <div className="form-group" key={idx}>
                         <label className="block text-sm font-semibold text-gray-700 mb-2">{header}</label>
-                        <input
-                          type="text"
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500"
-                          value={value}
-                          onChange={(e) => {
-                            // Update the fullRecord object
-                            const updatedFullRecord = { ...editingRecord.fullRecord };
-                            updatedFullRecord[header] = e.target.value;
-                            setEditingRecord({ ...editingRecord, fullRecord: updatedFullRecord });
-                          }}
-                        />
+                        {renderFormField(header, value, (field, val) => {
+                          const updatedFullRecord = { ...editingRecord.fullRecord };
+                          updatedFullRecord[field] = val;
+                          setEditingRecord({ ...editingRecord, fullRecord: updatedFullRecord });
+                        }, true)}
                       </div>
                     );
                   }
@@ -1375,7 +1404,6 @@ function App() {
               </div>
             </div>
             
-            {/* Fixed Footer */}
             <div className="px-6 py-4 border-t border-gray-200 bg-gray-50 flex justify-between gap-3 flex-shrink-0">
               <button 
                 className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
