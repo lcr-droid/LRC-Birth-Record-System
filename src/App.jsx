@@ -167,17 +167,14 @@ function App() {
   };
 
   const openPrintModal = (record) => {
-    // Get the child's name from the record
     const childName = record.fullRecord.find((_, idx) => 
       record.headers?.[idx]?.toLowerCase().includes('name of child')
     ) || "Unknown";
     
-    // Get page number from record
     const pageNumber = record.fullRecord.find((_, idx) => 
       record.headers?.[idx]?.toLowerCase().includes('page')
     ) || '';
     
-    // Get book number from record
     const bookNumber = record.fullRecord.find((_, idx) => 
       record.headers?.[idx]?.toLowerCase().includes('book')
     ) || '';
@@ -208,14 +205,13 @@ function App() {
       filename: `birth_certificate_${printData.issuedTo.replace(/\s/g, '_')}.pdf`,
       image: { type: 'jpeg', quality: 0.98 },
       html2canvas: { scale: 2, letterRendering: true },
-      jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+      jsPDF: { unit: 'in', format: 'legal', orientation: 'portrait' }
     };
     html2pdf().set(opt).from(element).save();
     toast.success("PDF generated successfully!");
     closePrintModal();
   };
 
-  // Helper function to capitalize text (except for LCR Registry Number)
   const capitalizeText = (text, header) => {
     if (!text) return '';
     if (header && (header.toLowerCase().includes('lcr') || header.toLowerCase().includes('registry number'))) {
@@ -848,6 +844,15 @@ function App() {
   const recentActivity = getRecentActivity();
   const avgRecordsPerBook = (stats.totalRecords / stats.totalSheets).toFixed(1);
 
+  // Helper to get field value from record
+  const getFieldValue = (record, keywords) => {
+    if (!record || !record.fullRecord || !record.headers) return '';
+    const index = record.headers.findIndex(h => 
+      keywords.some(keyword => h?.toLowerCase().includes(keyword))
+    );
+    return index !== -1 ? record.fullRecord[index] : '';
+  };
+
   return (
     <div className="flex min-h-screen bg-gray-50">
       <Toaster
@@ -1291,15 +1296,15 @@ function App() {
         )}
       </main>
 
-      {/* Print Certificate Modal */}
+      {/* Print Certificate Modal - Updated Layout to match second image (long format) */}
       {isPrintModalOpen && selectedRecord && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 animate-fade-in">
           <div className="bg-white rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden shadow-2xl animate-slide-up flex flex-col" onClick={(e) => e.stopPropagation()}>
             <div className="bg-gradient-to-r from-blue-600 to-purple-700 text-white px-6 py-4 flex-shrink-0">
               <div className="flex justify-between items-center">
                 <div>
-                  <h2 className="text-2xl font-bold">Birth Certificate</h2>
-                  <p className="text-blue-100 text-sm mt-1">Fill in the certificate details</p>
+                  <h2 className="text-2xl font-bold">Birth Certificate (Legal Size Format)</h2>
+                  <p className="text-blue-100 text-sm mt-1">Fill in the certificate details - Long / Legal paper size</p>
                 </div>
                 <button 
                   className="text-2xl hover:bg-white/20 rounded-full w-8 h-8 flex items-center justify-center transition"
@@ -1311,10 +1316,10 @@ function App() {
             </div>
             
             <div className="flex-1 overflow-y-auto p-6">
-              {/* Editable Form */}
+              {/* Editable Form - Compact */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">Date</label>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">Date of Issue</label>
                   <input
                     type="date"
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -1323,13 +1328,13 @@ function App() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">Page #</label>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">Page Number</label>
                   <input
                     type="text"
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                     value={printData.pageNumber}
                     onChange={(e) => handlePrintInputChange('pageNumber', e.target.value)}
-                    placeholder="Enter page number"
+                    placeholder="e.g., 72"
                   />
                 </div>
                 <div>
@@ -1339,27 +1344,26 @@ function App() {
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                     value={printData.bookNumber}
                     onChange={(e) => handlePrintInputChange('bookNumber', e.target.value)}
-                    placeholder="Enter book number"
+                    placeholder="e.g., 11"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">THIS CERTIFICATION is issued to</label>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">Issued To (Name)</label>
                   <input
                     type="text"
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                     value={printData.issuedTo}
                     onChange={(e) => handlePrintInputChange('issuedTo', e.target.value)}
-                    placeholder="Enter name"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">Assoc. Registration Officer</label>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">Asst. Registration Officer</label>
                   <input
                     type="text"
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                     value={printData.asstRegistrationOfficer}
                     onChange={(e) => handlePrintInputChange('asstRegistrationOfficer', e.target.value)}
-                    placeholder="Enter name"
+                    placeholder="Full name"
                   />
                 </div>
                 <div>
@@ -1369,7 +1373,7 @@ function App() {
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                     value={printData.municipalCivilRegistrar}
                     onChange={(e) => handlePrintInputChange('municipalCivilRegistrar', e.target.value)}
-                    placeholder="Enter name"
+                    placeholder="Full name"
                   />
                 </div>
                 <div>
@@ -1379,7 +1383,6 @@ function App() {
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                     value={printData.orNumber}
                     onChange={(e) => handlePrintInputChange('orNumber', e.target.value)}
-                    placeholder="Enter O.R. Number"
                   />
                 </div>
                 <div>
@@ -1389,7 +1392,6 @@ function App() {
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                     value={printData.amountPaid}
                     onChange={(e) => handlePrintInputChange('amountPaid', e.target.value)}
-                    placeholder="Enter amount"
                   />
                 </div>
                 <div>
@@ -1403,115 +1405,115 @@ function App() {
                 </div>
               </div>
 
-              {/* Certificate Preview */}
+              {/* Certificate Preview - Updated to LONG (legal) format matching second image */}
               <div className="border-t border-gray-200 pt-4">
-                <h3 className="text-lg font-semibold text-gray-800 mb-4">Preview</h3>
-                <div ref={printRef} className="relative bg-white border rounded-lg shadow-lg overflow-hidden" style={{ fontFamily: 'Times New Roman, serif' }}>
-                  {/* Background Image */}
-                  <div className="absolute inset-0 opacity-10 pointer-events-none">
-                    <img src="/bg_image.png" alt="Background" className="w-full h-full object-cover" />
-                  </div>
-                  
+                <h3 className="text-lg font-semibold text-gray-800 mb-4">Preview (Legal Size - Long format)</h3>
+                <div ref={printRef} className="relative bg-white border-2 border-gray-300 shadow-2xl rounded-lg overflow-hidden" style={{ fontFamily: 'Times New Roman, serif', minHeight: '13in', width: '100%' }}>
                   <div className="relative p-8 z-10">
+                    {/* Official Header */}
                     <div className="text-center mb-6">
                       <div className="border-b-2 border-gray-800 pb-4">
-                        <h1 className="text-xl font-bold">REPUBLIC OF THE PHILIPPINES</h1>
-                        <h2 className="text-lg font-bold">PROVINCE OF MISAMIS ORIENTAL</h2>
-                        <h3 className="text-md font-bold">OFFICE OF THE MUNICIPAL CIVIL REGISTRAR</h3>
-                        <h4 className="text-md font-bold">MAGSAYSAY</h4>
+                        <h1 className="text-2xl font-bold tracking-wide">REPUBLIC OF THE PHILIPPINES</h1>
+                        <h2 className="text-xl font-bold">PROVINCE OF MISAMIS ORIENTAL</h2>
+                        <h3 className="text-lg font-bold">OFFICE OF THE MUNICIPAL CIVIL REGISTRAR</h3>
+                        <h4 className="text-lg font-bold">MAGSAYSAY</h4>
                       </div>
                     </div>
                     
-                    <div className="text-center mb-4">
-                      <p className="text-sm">BIRTH AVAILABLE</p>
+                    <div className="text-center mb-3">
+                      <p className="text-sm uppercase tracking-wider font-semibold">BIRTH CERTIFICATE</p>
+                      <p className="text-xs">(CERTIFIED TRUE COPY)</p>
                     </div>
                     
-                    <div className="mb-4">
-                      <p className="text-right">{printData.date ? new Date(printData.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : '___________'}</p>
+                    <div className="mb-4 flex justify-end">
+                      <p className="text-sm">{printData.date ? new Date(printData.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : '___________'}</p>
                     </div>
                     
-                    <div className="mb-6">
-                      <p className="text-center font-semibold">WE CERTIFY that, among others the following facts of Birth appear in our Register of Births on Page <strong>{printData.pageNumber || '___'}</strong> of book number <strong>{printData.bookNumber || '___'}</strong>:</p>
+                    <div className="mb-6 text-center">
+                      <p className="font-semibold">WE CERTIFY that, among others the following facts of Birth appear in our Register of Births</p>
+                      <p className="font-semibold">on Page <span className="underline font-bold">{printData.pageNumber || '______'}</span> of Book Number <span className="underline font-bold">{printData.bookNumber || '______'}</span>:</p>
                     </div>
                     
-                    <div className="space-y-2 text-sm mb-6">
-                      <div className="grid grid-cols-2 gap-2">
-                        <div className="font-semibold">PRN</div>
-                        <div>: {selectedRecord?.fullRecord?.find((_, idx) => selectedRecord.headers?.[idx]?.toLowerCase().includes('prn')) || '___________'}</div>
+                    {/* Data rows - two column layout for better spacing on legal size */}
+                    <div className="space-y-2 text-sm mb-8">
+                      <div className="grid grid-cols-2 gap-2 border-b border-gray-100 pb-1">
+                        <div className="font-bold">PRN:</div>
+                        <div>{getFieldValue(selectedRecord, ['prn']) || '___________'}</div>
                       </div>
-                      <div className="grid grid-cols-2 gap-2">
-                        <div className="font-semibold">LCR Registry Number</div>
-                        <div>: {selectedRecord?.fullRecord?.find((_, idx) => selectedRecord.headers?.[idx]?.toLowerCase().includes('lcr') || selectedRecord.headers?.[idx]?.toLowerCase().includes('registry')) || '___________'}</div>
+                      <div className="grid grid-cols-2 gap-2 border-b border-gray-100 pb-1">
+                        <div className="font-bold">LCR Registry Number:</div>
+                        <div>{getFieldValue(selectedRecord, ['lcr', 'registry']) || '___________'}</div>
                       </div>
-                      <div className="grid grid-cols-2 gap-2">
-                        <div className="font-semibold">Date of Registration</div>
-                        <div>: {selectedRecord?.fullRecord?.find((_, idx) => selectedRecord.headers?.[idx]?.toLowerCase().includes('date of registration')) || '___________'}</div>
+                      <div className="grid grid-cols-2 gap-2 border-b border-gray-100 pb-1">
+                        <div className="font-bold">Date of Registration:</div>
+                        <div>{getFieldValue(selectedRecord, ['date of registration']) || '___________'}</div>
                       </div>
-                      <div className="grid grid-cols-2 gap-2">
-                        <div className="font-semibold">Name of Child</div>
-                        <div>: {selectedRecord?.fullRecord?.find((_, idx) => selectedRecord.headers?.[idx]?.toLowerCase().includes('name of child')) || '___________'}</div>
+                      <div className="grid grid-cols-2 gap-2 border-b border-gray-100 pb-1">
+                        <div className="font-bold">Name of Child:</div>
+                        <div className="font-semibold">{getFieldValue(selectedRecord, ['name of child']) || '___________'}</div>
                       </div>
-                      <div className="grid grid-cols-2 gap-2">
-                        <div className="font-semibold">Sex</div>
-                        <div>: {selectedRecord?.fullRecord?.find((_, idx) => selectedRecord.headers?.[idx]?.toLowerCase().includes('sex')) || '___________'}</div>
+                      <div className="grid grid-cols-2 gap-2 border-b border-gray-100 pb-1">
+                        <div className="font-bold">Sex:</div>
+                        <div>{getFieldValue(selectedRecord, ['sex', 'gender']) || '___________'}</div>
                       </div>
-                      <div className="grid grid-cols-2 gap-2">
-                        <div className="font-semibold">Date of Birth</div>
-                        <div>: {selectedRecord?.fullRecord?.find((_, idx) => selectedRecord.headers?.[idx]?.toLowerCase().includes('date of birth')) || '___________'}</div>
+                      <div className="grid grid-cols-2 gap-2 border-b border-gray-100 pb-1">
+                        <div className="font-bold">Date of Birth:</div>
+                        <div>{getFieldValue(selectedRecord, ['date of birth']) || '___________'}</div>
                       </div>
-                      <div className="grid grid-cols-2 gap-2">
-                        <div className="font-semibold">Place of Birth</div>
-                        <div>: {selectedRecord?.fullRecord?.find((_, idx) => selectedRecord.headers?.[idx]?.toLowerCase().includes('place of birth')) || '___________'}</div>
+                      <div className="grid grid-cols-2 gap-2 border-b border-gray-100 pb-1">
+                        <div className="font-bold">Place of Birth:</div>
+                        <div>{getFieldValue(selectedRecord, ['place of birth']) || '___________'}</div>
                       </div>
-                      <div className="grid grid-cols-2 gap-2">
-                        <div className="font-semibold">Name of Mother</div>
-                        <div>: {selectedRecord?.fullRecord?.find((_, idx) => selectedRecord.headers?.[idx]?.toLowerCase().includes('name of mother')) || '___________'}</div>
+                      <div className="grid grid-cols-2 gap-2 border-b border-gray-100 pb-1">
+                        <div className="font-bold">Name of Mother:</div>
+                        <div>{getFieldValue(selectedRecord, ['name of mother']) || '___________'}</div>
                       </div>
-                      <div className="grid grid-cols-2 gap-2">
-                        <div className="font-semibold">Nationality</div>
-                        <div>: Filipino</div>
+                      <div className="grid grid-cols-2 gap-2 border-b border-gray-100 pb-1">
+                        <div className="font-bold">Nationality (Mother):</div>
+                        <div>Filipino</div>
                       </div>
-                      <div className="grid grid-cols-2 gap-2">
-                        <div className="font-semibold">Name of Father</div>
-                        <div>: {selectedRecord?.fullRecord?.find((_, idx) => selectedRecord.headers?.[idx]?.toLowerCase().includes('name of father')) || '___________'}</div>
+                      <div className="grid grid-cols-2 gap-2 border-b border-gray-100 pb-1">
+                        <div className="font-bold">Name of Father:</div>
+                        <div>{getFieldValue(selectedRecord, ['name of father']) || '___________'}</div>
                       </div>
-                      <div className="grid grid-cols-2 gap-2">
-                        <div className="font-semibold">Nationality</div>
-                        <div>: Filipino</div>
+                      <div className="grid grid-cols-2 gap-2 border-b border-gray-100 pb-1">
+                        <div className="font-bold">Nationality (Father):</div>
+                        <div>Filipino</div>
                       </div>
-                      <div className="grid grid-cols-2 gap-2">
-                        <div className="font-semibold">Date of Marriage of Parents</div>
-                        <div>: {selectedRecord?.fullRecord?.find((_, idx) => selectedRecord.headers?.[idx]?.toLowerCase().includes('date of marriage')) || '___________'}</div>
+                      <div className="grid grid-cols-2 gap-2 border-b border-gray-100 pb-1">
+                        <div className="font-bold">Date of Marriage of Parents:</div>
+                        <div>{getFieldValue(selectedRecord, ['date of marriage']) || '___________'}</div>
                       </div>
-                      <div className="grid grid-cols-2 gap-2">
-                        <div className="font-semibold">Place of Marriage of Parents</div>
-                        <div>: {selectedRecord?.fullRecord?.find((_, idx) => selectedRecord.headers?.[idx]?.toLowerCase().includes('place of marriage')) || 'Magsaysay Misamis Oriental'}</div>
-                      </div>
-                    </div>
-                    
-                    <div className="mb-6">
-                      <p>THIS CERTIFICATION is issued to <strong>{printData.issuedTo || '___________'}</strong> upon his/her request.</p>
-                    </div>
-                    
-                    <div className="flex justify-between mt-8">
-                      <div className="text-center">
-                        <p className="font-bold">{printData.asstRegistrationOfficer || '_________________'}</p>
-                        <p>Assoc. Registration Officer</p>
-                      </div>
-                      <div className="text-center">
-                        <p className="font-bold">{printData.municipalCivilRegistrar || '_________________'}</p>
-                        <p>Municipal Civil Registrar</p>
+                      <div className="grid grid-cols-2 gap-2 border-b border-gray-100 pb-1">
+                        <div className="font-bold">Place of Marriage of Parents:</div>
+                        <div>{getFieldValue(selectedRecord, ['place of marriage']) || 'Magsaysay, Misamis Oriental'}</div>
                       </div>
                     </div>
                     
-                    <div className="mt-6">
-                      <p>OCR Number: {printData.orNumber || '___________'}</p>
-                      <p>Amount Paid: {printData.amountPaid ? `₱${printData.amountPaid}` : '___________'}</p>
-                      <p>Date Paid: {printData.datePaid ? new Date(printData.datePaid).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : '___________'}</p>
+                    <div className="mb-8 mt-4">
+                      <p>THIS CERTIFICATION is issued to <span className="font-bold underline">{printData.issuedTo || '___________'}</span> upon his/her request.</p>
                     </div>
                     
-                    <div className="mt-4 text-xs text-gray-500 italic text-center">
+                    <div className="flex justify-between mt-6">
+                      <div className="text-center w-1/2">
+                        <p className="font-bold text-base">{printData.asstRegistrationOfficer || '_________________________'}</p>
+                        <p className="text-sm">Asst. Registration Officer</p>
+                      </div>
+                      <div className="text-center w-1/2">
+                        <p className="font-bold text-base">{printData.municipalCivilRegistrar || '_________________________'}</p>
+                        <p className="text-sm">Municipal Civil Registrar</p>
+                      </div>
+                    </div>
+                    
+                    <div className="mt-8 space-y-1 text-sm">
+                      <p>O.R. Number: <span className="font-mono">{printData.orNumber || '___________'}</span></p>
+                      <p>Amount Paid: <span className="font-mono">{printData.amountPaid ? `₱ ${printData.amountPaid}` : '___________'}</span></p>
+                      <p>Date Paid: <span className="font-mono">{printData.datePaid ? new Date(printData.datePaid).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : '___________'}</span></p>
+                    </div>
+                    
+                    <div className="mt-6 text-center text-xs text-gray-500 italic border-t pt-4">
                       <p>NOTE: The Certifications delivered are evidence of age.</p>
+                      <p className="mt-1">*** This document is issued by the Office of the Municipal Civil Registrar, Magsaysay, Misamis Oriental ***</p>
                     </div>
                   </div>
                 </div>
@@ -1529,7 +1531,7 @@ function App() {
                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition flex items-center gap-2"
                 onClick={generatePDF}
               >
-                <span>📄</span> Generate PDF
+                <span>📄</span> Generate PDF (Legal)
               </button>
             </div>
           </div>
