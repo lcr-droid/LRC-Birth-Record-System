@@ -894,7 +894,7 @@ function App() {
         )}
       </main>
 
-      {/* Print Certificate Modal - EXACT match to the images */}
+           {/* Print Certificate Modal - EXACT match with background image */}
       {isPrintModalOpen && selectedRecord && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 animate-fade-in">
           <div className="bg-white rounded-2xl w-full max-w-3xl max-h-[90vh] overflow-hidden shadow-2xl animate-slide-up flex flex-col" onClick={(e) => e.stopPropagation()}>
@@ -1005,11 +1005,17 @@ function App() {
                 </div>
               </div>
 
-              {/* Certificate Preview - EXACT match to the images */}
+              {/* Certificate Preview - with background image and proper spacing */}
               <div className="border-t border-gray-200 pt-4">
                 <h3 className="text-lg font-semibold text-gray-800 mb-4">Preview</h3>
-                <div ref={printRef} className="bg-white border-2 border-gray-400 shadow-xl" style={{ fontFamily: "'Times New Roman', serif", width: '100%' }}>
-                  <div className="p-8">
+                <div ref={printRef} className="relative bg-white border-2 border-gray-400 shadow-xl overflow-hidden" style={{ fontFamily: "'Times New Roman', serif", width: '100%', minHeight: '750px' }}>
+                  {/* Background Image - visible watermark */}
+                  <div className="absolute inset-0 opacity-20 pointer-events-none">
+                    <img src="/bg_image.png" alt="Background" className="w-full h-full object-cover" />
+                  </div>
+                 
+                  {/* Content - positioned with top margin to avoid covering upper image */}
+                  <div className="relative pt-20 pb-8 px-8 z-10">
                     {/* LCR Form No. 1A */}
                     <div className="text-center mb-1">
                       <p className="text-sm font-bold">LCR Form No. 1A</p>
