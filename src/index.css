@@ -71,7 +71,7 @@
   min-height: 0; /* Important for Firefox */
 }
 
-/* Print styles */
+/* Print styles - Updated for legal size long format */
 @media print {
   body * {
     visibility: hidden;
@@ -84,10 +84,11 @@
     left: 0;
     top: 0;
     width: 100%;
+    padding: 0.3in;
   }
   @page {
-    size: letter;
-    margin: 0.5in;
+    size: legal;
+    margin: 0.4in;
   }
 }
 
@@ -98,4 +99,81 @@
   background-position: center;
   background-size: cover;
   opacity: 0.1;
+}
+
+/* Custom scrollbar styles */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+/* Animation utilities */
+.animate-spin-slow {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-slide-up {
+  animation: slideUp 0.25s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Table styles */
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+th, td {
+  border-bottom: 1px solid #e5e7eb;
+}
+
+/* Form input focus styles */
+input:focus, select:focus, textarea:focus {
+  outline: none;
 }
