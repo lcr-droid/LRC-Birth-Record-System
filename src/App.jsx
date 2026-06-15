@@ -31,8 +31,6 @@ function App() {
   const [addFormHeaders, setAddFormHeaders] = useState([]);
   const [printData, setPrintData] = useState({
     date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
-    pageNumber: '',
-    bookNumber: '',
     issuedTo: '',
     asstRegistrationOfficer: '',
     municipalCivilRegistrar: '',
@@ -60,9 +58,6 @@ function App() {
         if (response.fromCache) {
           toast.success("📊 Data loaded from cache", { duration: 2000 });
         }
-        if (response.warning) {
-          toast.warning(response.warning, { duration: 5000 });
-        }
       } else {
         throw new Error(response.error);
       }
@@ -76,7 +71,6 @@ function App() {
   };
 
   const fetchSpecificSheet = async (sheetName) => {
-    const toastId = toast.loading(`Loading ${sheetName}...`);
     try {
       setLoading(true);
       setError(null);
@@ -94,12 +88,7 @@ function App() {
         setSelectedMonth("all");
         setSearchTerm("");
         if (response.fromCache) {
-          toast.success(`📄 Loaded ${sheetName} from cache`, { id: toastId, duration: 1500 });
-        } else {
-          toast.success(`📄 Loaded ${sheetName}`, { id: toastId, duration: 1500 });
-        }
-        if (response.warning) {
-          toast.warning(response.warning, { duration: 3000 });
+          toast.success(`📄 Loaded ${sheetName} from cache`, { duration: 1500 });
         }
       } else {
         throw new Error(response.error);
@@ -107,7 +96,7 @@ function App() {
     } catch (err) {
       console.error(`Fetch sheet "${sheetName}" failed:`, err);
       setError(err.message);
-      toast.error(`Failed to load ${sheetName}: ${err.message}`, { id: toastId });
+      toast.error(`Failed to load ${sheetName}: ${err.message}`);
     } finally {
       setLoading(false);
     }
@@ -176,23 +165,14 @@ function App() {
   };
 
   const openPrintModal = (record) => {
+    // Get the child's name from the record
     const childName = record.fullRecord.find((_, idx) => 
       record.headers?.[idx]?.toLowerCase().includes('name of child')
     ) || "Unknown";
     
-    const pageNumber = record.fullRecord.find((_, idx) => 
-      record.headers?.[idx]?.toLowerCase().includes('page')
-    ) || '';
-    
-    const bookNumber = record.fullRecord.find((_, idx) => 
-      record.headers?.[idx]?.toLowerCase().includes('book')
-    ) || '';
-    
     setPrintData({
       ...printData,
-      issuedTo: childName,
-      pageNumber: pageNumber,
-      bookNumber: bookNumber
+      issuedTo: childName
     });
     setSelectedRecord(record);
     setIsPrintModalOpen(true);
@@ -221,6 +201,7 @@ function App() {
     closePrintModal();
   };
 
+  // Helper function to capitalize text (except for LCR Registry Number)
   const capitalizeText = (text, header) => {
     if (!text) return '';
     if (header && (header.toLowerCase().includes('lcr') || header.toLowerCase().includes('registry number'))) {
@@ -953,29 +934,12 @@ function App() {
                   <h1 className="text-3xl font-bold text-gray-800 mb-2">Data Analytics Dashboard</h1>
                   <p className="text-gray-600">Comprehensive insights and analytics for LCR Registry Birth Records</p>
                 </div>
-                <div className="flex gap-3">
-                  <button 
-                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition flex items-center gap-2 shadow-md"
-                    onClick={refreshData}
-                  >
-                    <span>🔄</span> Refresh Data
-                  </button>
-                  <button 
-                    className="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition flex items-center gap-2 shadow-md"
-                    onClick={async () => {
-                      toast.loading("Clearing cache...", { id: "clear-cache" });
-                      try {
-                        await fetch('/api/sheets/clear-cache', { method: 'POST' });
-                        await fetchAllSheets();
-                        toast.success("Cache cleared! Data refreshed.", { id: "clear-cache" });
-                      } catch (err) {
-                        toast.error("Failed to clear cache", { id: "clear-cache" });
-                      }
-                    }}
-                  >
-                    <span>🗑️</span> Clear Cache
-                  </button>
-                </div>
+                <button 
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition flex items-center gap-2 shadow-md"
+                  onClick={refreshData}
+                >
+                  <span>🔄</span> Refresh Data
+                </button>
               </div>
             </div>
 
@@ -1345,37 +1309,16 @@ function App() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">Page #</label>
-                  <input
-                    type="text"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    value={printData.pageNumber}
-                    onChange={(e) => handlePrintInputChange('pageNumber', e.target.value)}
-                    placeholder="Enter page number"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">Book Number</label>
-                  <input
-                    type="text"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    value={printData.bookNumber}
-                    onChange={(e) => handlePrintInputChange('bookNumber', e.target.value)}
-                    placeholder="Enter book number"
-                  />
-                </div>
-                <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-1">THIS CERTIFICATION is issued to</label>
                   <input
                     type="text"
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                     value={printData.issuedTo}
                     onChange={(e) => handlePrintInputChange('issuedTo', e.target.value)}
-                    placeholder="Enter name"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">Assoc. Registration Officer</label>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">Asst. Registration Officer</label>
                   <input
                     type="text"
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -1428,112 +1371,46 @@ function App() {
               {/* Certificate Preview */}
               <div className="border-t border-gray-200 pt-4">
                 <h3 className="text-lg font-semibold text-gray-800 mb-4">Preview</h3>
-                <div ref={printRef} className="relative bg-white border rounded-lg shadow-lg overflow-hidden" style={{ fontFamily: 'Times New Roman, serif' }}>
-                  {/* Background Image */}
-                  <div className="absolute inset-0 opacity-10 pointer-events-none">
-                    <img src="/bg_image.png" alt="Background" className="w-full h-full object-cover" />
+                <div ref={printRef} className="bg-white border rounded-lg p-8 shadow-lg" style={{ fontFamily: 'Times New Roman, serif' }}>
+                  <div className="text-center mb-6">
+                    <div className="border-b-2 border-gray-800 pb-4">
+                      <div className="flex justify-between items-start">
+                        <div className="text-left">
+                          <div className="text-sm">Republic of the Philippines</div>
+                          <div className="text-sm font-bold">PROVINCE OF MISAMIS ORIENTAL</div>
+                          <div className="text-sm">Office of the Municipal Civil Registrar</div>
+                          <div className="text-sm font-bold">MAGSAYSAY</div>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-sm">OCRGS MANILA</div>
+                        </div>
+                      </div>
+                      <div className="mt-2">
+                        <div className="text-xs">CERTIFICATION</div>
+                      </div>
+                    </div>
                   </div>
                   
-                  <div className="relative p-8 z-10">
-                    <div className="text-center mb-6">
-                      <div className="border-b-2 border-gray-800 pb-4">
-                        <h1 className="text-xl font-bold">REPUBLIC OF THE PHILIPPINES</h1>
-                        <h2 className="text-lg font-bold">PROVINCE OF MISAMIS ORIENTAL</h2>
-                        <h3 className="text-md font-bold">OFFICE OF THE MUNICIPAL CIVIL REGISTRAR</h3>
-                        <h4 className="text-md font-bold">MAGSAYSAY</h4>
-                      </div>
-                    </div>
-                    
-                    <div className="text-center mb-4">
-                      <p className="text-sm">BIRTH AVAILABLE</p>
-                    </div>
-                    
-                    <div className="mb-4">
-                      <p className="text-right">{printData.date ? new Date(printData.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : '___________'}</p>
-                    </div>
-                    
-                    <div className="mb-6">
-                      <p className="text-center font-semibold">WE CERTIFY that, among others the following facts of Birth appear in our Register of Births on Page <strong>{printData.pageNumber || '___'}</strong> of book number <strong>{printData.bookNumber || '___'}</strong>:</p>
-                    </div>
-                    
-                    <div className="space-y-2 text-sm mb-6">
-                      <div className="grid grid-cols-2 gap-2">
-                        <div className="font-semibold">PRN</div>
-                        <div>: {selectedRecord?.fullRecord?.find((_, idx) => selectedRecord.headers?.[idx]?.toLowerCase().includes('prn')) || '___________'}</div>
-                      </div>
-                      <div className="grid grid-cols-2 gap-2">
-                        <div className="font-semibold">LCR Registry Number</div>
-                        <div>: {selectedRecord?.fullRecord?.find((_, idx) => selectedRecord.headers?.[idx]?.toLowerCase().includes('lcr') || selectedRecord.headers?.[idx]?.toLowerCase().includes('registry')) || '___________'}</div>
-                      </div>
-                      <div className="grid grid-cols-2 gap-2">
-                        <div className="font-semibold">Date of Registration</div>
-                        <div>: {selectedRecord?.fullRecord?.find((_, idx) => selectedRecord.headers?.[idx]?.toLowerCase().includes('date of registration')) || '___________'}</div>
-                      </div>
-                      <div className="grid grid-cols-2 gap-2">
-                        <div className="font-semibold">Name of Child</div>
-                        <div>: {selectedRecord?.fullRecord?.find((_, idx) => selectedRecord.headers?.[idx]?.toLowerCase().includes('name of child')) || '___________'}</div>
-                      </div>
-                      <div className="grid grid-cols-2 gap-2">
-                        <div className="font-semibold">Sex</div>
-                        <div>: {selectedRecord?.fullRecord?.find((_, idx) => selectedRecord.headers?.[idx]?.toLowerCase().includes('sex')) || '___________'}</div>
-                      </div>
-                      <div className="grid grid-cols-2 gap-2">
-                        <div className="font-semibold">Date of Birth</div>
-                        <div>: {selectedRecord?.fullRecord?.find((_, idx) => selectedRecord.headers?.[idx]?.toLowerCase().includes('date of birth')) || '___________'}</div>
-                      </div>
-                      <div className="grid grid-cols-2 gap-2">
-                        <div className="font-semibold">Place of Birth</div>
-                        <div>: {selectedRecord?.fullRecord?.find((_, idx) => selectedRecord.headers?.[idx]?.toLowerCase().includes('place of birth')) || '___________'}</div>
-                      </div>
-                      <div className="grid grid-cols-2 gap-2">
-                        <div className="font-semibold">Name of Mother</div>
-                        <div>: {selectedRecord?.fullRecord?.find((_, idx) => selectedRecord.headers?.[idx]?.toLowerCase().includes('name of mother')) || '___________'}</div>
-                      </div>
-                      <div className="grid grid-cols-2 gap-2">
-                        <div className="font-semibold">Nationality</div>
-                        <div>: Filipino</div>
-                      </div>
-                      <div className="grid grid-cols-2 gap-2">
-                        <div className="font-semibold">Name of Father</div>
-                        <div>: {selectedRecord?.fullRecord?.find((_, idx) => selectedRecord.headers?.[idx]?.toLowerCase().includes('name of father')) || '___________'}</div>
-                      </div>
-                      <div className="grid grid-cols-2 gap-2">
-                        <div className="font-semibold">Nationality</div>
-                        <div>: Filipino</div>
-                      </div>
-                      <div className="grid grid-cols-2 gap-2">
-                        <div className="font-semibold">Date of Marriage of Parents</div>
-                        <div>: {selectedRecord?.fullRecord?.find((_, idx) => selectedRecord.headers?.[idx]?.toLowerCase().includes('date of marriage')) || '___________'}</div>
-                      </div>
-                      <div className="grid grid-cols-2 gap-2">
-                        <div className="font-semibold">Place of Marriage of Parents</div>
-                        <div>: {selectedRecord?.fullRecord?.find((_, idx) => selectedRecord.headers?.[idx]?.toLowerCase().includes('place of marriage')) || 'Magsaysay Misamis Oriental'}</div>
-                      </div>
-                    </div>
-                    
-                    <div className="mb-6">
-                      <p>THIS CERTIFICATION is issued to <strong>{printData.issuedTo || '___________'}</strong> upon his/her request.</p>
-                    </div>
-                    
-                    <div className="flex justify-between mt-8">
-                      <div className="text-center">
-                        <p className="font-bold">{printData.asstRegistrationOfficer || '_________________'}</p>
-                        <p>Assoc. Registration Officer</p>
-                      </div>
-                      <div className="text-center">
-                        <p className="font-bold">{printData.municipalCivilRegistrar || '_________________'}</p>
-                        <p>Municipal Civil Registrar</p>
-                      </div>
-                    </div>
-                    
+                  <div className="space-y-3 text-sm">
+                    <p className="text-right">{printData.date ? new Date(printData.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : '___________'}</p>
+                    <p>TO WHOM IT MAY CONCERN:</p>
+                    <p>THIS IS TO CERTIFY that from the files of this office, <strong>{printData.issuedTo || '___________'}</strong> is/are not a statistical measure for birth registration.</p>
+                    <p>This certification is issued upon the request of the above-named for whatever legal purpose it may serve.</p>
                     <div className="mt-6">
-                      <p>OCR Number: {printData.orNumber || '___________'}</p>
-                      <p>Amount Paid: {printData.amountPaid ? `₱${printData.amountPaid}` : '___________'}</p>
-                      <p>Date Paid: {printData.datePaid ? new Date(printData.datePaid).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : '___________'}</p>
+                      <p className="font-bold">SHIRELY FE S. RATILLA</p>
+                      <p>Municipal Civil Registrar</p>
                     </div>
-                    
-                    <div className="mt-4 text-xs text-gray-500 italic text-center">
-                      <p>NOTE: The Certifications delivered are evidence of age.</p>
+                    <div className="mt-2">
+                      <p className="font-bold">VANISSA R. GASTA</p>
+                      <p>Asst. Registration Officer</p>
+                    </div>
+                    <div className="mt-4">
+                      <p>O.R. Number : {printData.orNumber || '___________'}</p>
+                      <p>Amount Paid : {printData.amountPaid ? `₱${printData.amountPaid}` : '___________'}</p>
+                      <p>Date Paid : {printData.datePaid ? new Date(printData.datePaid).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : '___________'}</p>
+                    </div>
+                    <div className="mt-4 text-xs text-gray-500 italic">
+                      <p>NOTE: This Certification is made by the Registrar of any entry</p>
                     </div>
                   </div>
                 </div>
