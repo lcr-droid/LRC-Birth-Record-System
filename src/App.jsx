@@ -853,8 +853,13 @@ function App() {
   const yearlyData = getYearlyDistribution();
   const genderData = getGenderDistribution();
   const topBooks = getTopBooks();
-  const recentActivity = getRecentActivity();
   const avgRecordsPerBook = (stats.totalRecords / stats.totalSheets).toFixed(1);
+
+  // Helper function to get field value safely
+  const getPrintFieldValue = (keywords) => {
+    const val = getFieldValue(selectedRecord, keywords);
+    return val || '___________';
+  };
 
   return (
     <div className="flex min-h-screen bg-gray-50">
@@ -1243,7 +1248,7 @@ function App() {
                         <tr key={rowIdx} className="hover:bg-gray-50 transition">
                           {isAllBooks && <td className="px-4 py-3 text-sm text-blue-600 font-medium">{row.bookName || "—"}</td>}
                           <td className="px-4 py-3 text-sm text-gray-800">{row.book || "—"}</td>
-                          <td className="px-4 py-3 text-sm text-gray-800">{row.page || "—"}<td>
+                          <td className="px-4 py-3 text-sm text-gray-800">{row.page || "—"}</td>
                           <td className="px-4 py-3 text-sm text-gray-800">{row.lcrNumber || "—"}</td>
                           <td className="px-4 py-3 text-sm text-gray-800">{row.registrationDate || "—"}</td>
                           <td className="px-4 py-3 text-sm font-medium text-gray-800">{row.childName || "—"}</td>
@@ -1272,7 +1277,7 @@ function App() {
                               </button>
                             </div>
                           </td>
-                        </tr>
+                        </td>
                       ))}
                     </tbody>
                   </table>
@@ -1299,7 +1304,7 @@ function App() {
         )}
       </main>
 
-      {/* Print Certificate Modal - EXACT match to upper and lower images */}
+      {/* Print Certificate Modal */}
       {isPrintModalOpen && selectedRecord && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 animate-fade-in">
           <div className="bg-white rounded-2xl w-full max-w-3xl max-h-[90vh] overflow-hidden shadow-2xl animate-slide-up flex flex-col" onClick={(e) => e.stopPropagation()}>
@@ -1410,12 +1415,12 @@ function App() {
                 </div>
               </div>
 
-              {/* Certificate Preview - EXACT match to upper.png and lower.png */}
+              {/* Certificate Preview */}
               <div className="border-t border-gray-200 pt-4">
                 <h3 className="text-lg font-semibold text-gray-800 mb-4">Preview</h3>
                 <div ref={printRef} className="relative bg-white border border-gray-300 shadow-lg" style={{ fontFamily: "'Times New Roman', 'Courier New', monospace", width: '100%' }}>
                   <div className="relative p-6 z-10">
-                    {/* UPPER SECTION - matches upper.png */}
+                    {/* UPPER SECTION */}
                     <div className="text-center mb-4">
                       <h1 className="text-xl font-bold uppercase tracking-wide">OFFICE OF THE MUNICIPAL CIVIL REGISTRAR</h1>
                     </div>
@@ -1424,7 +1429,7 @@ function App() {
                       <h2 className="text-lg font-bold uppercase">BIRTH AVAILABLE</h2>
                     </div>
 
-                    {/* Date - right aligned like in upper.png */}
+                    {/* Date */}
                     <div className="flex justify-end mb-4">
                       <div className="text-right">
                         <p className="text-sm">
@@ -1433,77 +1438,36 @@ function App() {
                       </div>
                     </div>
 
-                    {/* WE CERTIFY statement - matches upper.png */}
+                    {/* WE CERTIFY statement */}
                     <div className="mb-4">
                       <p className="text-sm">
                         WE CERTIFY that, among others the following facts of Birth appear in our Register of Births on Page <strong>{printData.pageNumber || '___'}</strong> of book number <strong>{printData.bookNumber || '___'}</strong>:
                       </p>
                     </div>
 
-                    {/* Data fields table - matches upper.png format */}
+                    {/* Data fields */}
                     <div className="space-y-1 text-sm mb-6">
-                      <div className="flex">
-                        <span className="font-medium w-44">PRN</span>
-                        <span>: {(() => { const val = getFieldValue(selectedRecord, ['prn']); return val || '___________'; })()}</span>
-                      </div>
-                      <div className="flex">
-                        <span className="font-medium w-44">LCR Registry Number</span>
-                        <span>: {(() => { const val = getFieldValue(selectedRecord, ['lcr', 'registry']); return val || '___________'; })()}</span>
-                      </div>
-                      <div className="flex">
-                        <span className="font-medium w-44">Date of Registration</span>
-                        <span>: {(() => { const val = getFieldValue(selectedRecord, ['date of registration']); return val || '___________'; })()}</span>
-                      </div>
-                      <div className="flex">
-                        <span className="font-medium w-44">Name of Child</span>
-                        <span>: {(() => { const val = getFieldValue(selectedRecord, ['name of child']); return val || '___________'; })()}</span>
-                      </div>
-                      <div className="flex">
-                        <span className="font-medium w-44">Sex</span>
-                        <span>: {(() => { const val = getFieldValue(selectedRecord, ['sex', 'gender']); return val || '___________'; })()}</span>
-                      </div>
-                      <div className="flex">
-                        <span className="font-medium w-44">Date of Birth</span>
-                        <span>: {(() => { const val = getFieldValue(selectedRecord, ['date of birth']); return val || '___________'; })()}</span>
-                      </div>
-                      <div className="flex">
-                        <span className="font-medium w-44">Place of Birth</span>
-                        <span>: {(() => { const val = getFieldValue(selectedRecord, ['place of birth']); return val || '___________'; })()}</span>
-                      </div>
-                      <div className="flex">
-                        <span className="font-medium w-44">Name of Mother</span>
-                        <span>: {(() => { const val = getFieldValue(selectedRecord, ['name of mother']); return val || '___________'; })()}</span>
-                      </div>
-                      <div className="flex">
-                        <span className="font-medium w-44">Nationality</span>
-                        <span>: FILIPINO</span>
-                      </div>
-                      <div className="flex">
-                        <span className="font-medium w-44">Name of Father</span>
-                        <span>: {(() => { const val = getFieldValue(selectedRecord, ['name of father']); return val || '___________'; })()}</span>
-                      </div>
-                      <div className="flex">
-                        <span className="font-medium w-44">Nationality</span>
-                        <span>: FILIPINO</span>
-                      </div>
-                      <div className="flex">
-                        <span className="font-medium w-44">Date of Marriage of Parents</span>
-                        <span>: {(() => { const val = getFieldValue(selectedRecord, ['date of marriage']); return val || '___________'; })()}</span>
-                      </div>
-                      <div className="flex">
-                        <span className="font-medium w-44">Place of Marriage of Parents</span>
-                        <span>: {(() => { const val = getFieldValue(selectedRecord, ['place of marriage']); return val || '___________'; })()}</span>
-                      </div>
+                      <div className="flex"><span className="font-medium w-44">PRN</span><span>: {getPrintFieldValue(['prn'])}</span></div>
+                      <div className="flex"><span className="font-medium w-44">LCR Registry Number</span><span>: {getPrintFieldValue(['lcr', 'registry'])}</span></div>
+                      <div className="flex"><span className="font-medium w-44">Date of Registration</span><span>: {getPrintFieldValue(['date of registration'])}</span></div>
+                      <div className="flex"><span className="font-medium w-44">Name of Child</span><span>: {getPrintFieldValue(['name of child'])}</span></div>
+                      <div className="flex"><span className="font-medium w-44">Sex</span><span>: {getPrintFieldValue(['sex', 'gender'])}</span></div>
+                      <div className="flex"><span className="font-medium w-44">Date of Birth</span><span>: {getPrintFieldValue(['date of birth'])}</span></div>
+                      <div className="flex"><span className="font-medium w-44">Place of Birth</span><span>: {getPrintFieldValue(['place of birth'])}</span></div>
+                      <div className="flex"><span className="font-medium w-44">Name of Mother</span><span>: {getPrintFieldValue(['name of mother'])}</span></div>
+                      <div className="flex"><span className="font-medium w-44">Nationality</span><span>: FILIPINO</span></div>
+                      <div className="flex"><span className="font-medium w-44">Name of Father</span><span>: {getPrintFieldValue(['name of father'])}</span></div>
+                      <div className="flex"><span className="font-medium w-44">Nationality</span><span>: FILIPINO</span></div>
+                      <div className="flex"><span className="font-medium w-44">Date of Marriage of Parents</span><span>: {getPrintFieldValue(['date of marriage'])}</span></div>
+                      <div className="flex"><span className="font-medium w-44">Place of Marriage of Parents</span><span>: {getPrintFieldValue(['place of marriage'])}</span></div>
                     </div>
 
-                    {/* THIS CERTIFICATION statement - matches both images */}
+                    {/* THIS CERTIFICATION statement */}
                     <div className="mb-4">
-                      <p className="text-sm">
-                        THIS CERTIFICATION is issued to <strong>{printData.issuedTo || '___________'}</strong> upon his/her request.
-                      </p>
+                      <p className="text-sm">THIS CERTIFICATION is issued to <strong>{printData.issuedTo || '___________'}</strong> upon his/her request.</p>
                     </div>
 
-                    {/* LOWER SECTION - matches lower.png */}
+                    {/* LOWER SECTION */}
                     <div className="mb-4">
                       <p className="font-bold text-sm">{printData.asstRegistrationOfficer || '____________________'}</p>
                       <p className="text-xs">ASST. REGISTRATION OFFICER</p>
@@ -1515,14 +1479,14 @@ function App() {
                       <p className="text-xs">CLERK III</p>
                     </div>
 
-                    {/* O.R. Information - matches lower.png */}
+                    {/* O.R. Information */}
                     <div className="space-y-0.5 text-sm mb-4">
                       <p><span className="font-semibold">O.R. Number:</span> {printData.orNumber || '___________'}</p>
                       <p><span className="font-semibold">Amount Paid:</span> {printData.amountPaid ? printData.amountPaid : '___________'}</p>
                       <p><span className="font-semibold">Date Paid:</span> {printData.datePaid ? new Date(printData.datePaid).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }).toUpperCase() : '___________'}</p>
                     </div>
 
-                    {/* NOTE - exact wording from lower.png */}
+                    {/* NOTE */}
                     <div className="mt-4 text-xs text-gray-600 italic">
                       <p>NOTE: This Certification is not valid if has mark of assurance or alteration of any entry</p>
                     </div>
@@ -1532,41 +1496,23 @@ function App() {
             </div>
            
             <div className="px-6 py-4 border-t border-gray-200 bg-gray-50 flex justify-end gap-3 flex-shrink-0">
-              <button
-                className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition"
-                onClick={closePrintModal}
-              >
-                Cancel
-              </button>
-              <button
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition flex items-center gap-2"
-                onClick={generatePDF}
-              >
-                <span>📄</span> Generate PDF
-              </button>
+              <button className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition" onClick={closePrintModal}>Cancel</button>
+              <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition flex items-center gap-2" onClick={generatePDF}><span>📄</span> Generate PDF</button>
             </div>
           </div>
         </div>
       )}
-                  
-      {/* View Details Modal */}
+
+      {/* View Details Modal - Keep as is */}
       {isModalOpen && selectedRecord && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 animate-fade-in">
           <div className="bg-white rounded-2xl w-full max-w-3xl max-h-[90vh] overflow-hidden shadow-2xl animate-slide-up flex flex-col" onClick={(e) => e.stopPropagation()}>
             <div className="bg-gradient-to-r from-blue-600 to-purple-700 text-white px-6 py-4 flex-shrink-0">
               <div className="flex justify-between items-center">
-                <div>
-                  <h2 className="text-2xl font-bold">Personal Information</h2>
-                </div>
-                <button
-                  className="text-2xl hover:bg-white/20 rounded-full w-8 h-8 flex items-center justify-center transition"
-                  onClick={closeModal}
-                >
-                  ×
-                </button>
+                <div><h2 className="text-2xl font-bold">Personal Information</h2></div>
+                <button className="text-2xl hover:bg-white/20 rounded-full w-8 h-8 flex items-center justify-center transition" onClick={closeModal}>×</button>
               </div>
             </div>
-           
             <div className="p-6 overflow-y-auto flex-1">
               <div className="flex items-center gap-4 mb-6 pb-4 border-b border-gray-200">
                 <div className="text-6xl">
@@ -1576,50 +1522,35 @@ function App() {
                 </div>
                 <div>
                   <h3 className="text-2xl font-bold text-gray-800">
-                    {selectedRecord.fullRecord.find((_, idx) =>
-                      selectedRecord.headers?.[idx]?.toLowerCase().includes('name of child')
-                    ) || "Unknown"}
+                    {selectedRecord.fullRecord.find((_, idx) => selectedRecord.headers?.[idx]?.toLowerCase().includes('name of child')) || "Unknown"}
                   </h3>
                 </div>
               </div>
-             
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="col-span-2">
-                  <h4 className="text-lg font-semibold text-blue-600 mb-3 flex items-center gap-2">
-                    <span>📋</span> Personal Details
-                  </h4>
-                </div>
-               
+                <div className="col-span-2"><h4 className="text-lg font-semibold text-blue-600 mb-3">📋 Personal Details</h4></div>
                 {selectedRecord.fullRecord.map((value, index) => {
                   const header = selectedRecord.headers?.[index] || `Field ${index + 1}`;
-                  if (value && value.toString().trim()) {
-                    if (isAllBooks && header === "Book Name") return null;
-                   
+                  if (value && value.toString().trim() && !(isAllBooks && header === "Book Name")) {
                     let icon = "📄";
-                    const headerLower = header.toLowerCase();
-                    if (headerLower.includes('name')) icon = "👤";
-                    else if (headerLower.includes('date')) icon = "📅";
-                    else if (headerLower.includes('book')) icon = "📚";
-                    else if (headerLower.includes('page')) icon = "📄";
-                    else if (headerLower.includes('lcr') || headerLower.includes('registry')) icon = "🔢";
-                    else if (headerLower.includes('sex') || headerLower.includes('gender')) icon = "⚥";
-                    else if (headerLower.includes('birth')) icon = "🎂";
-                    else if (headerLower.includes('place')) icon = "📍";
-                    else if (headerLower.includes('mother')) icon = "👩";
-                    else if (headerLower.includes('father')) icon = "👨";
-                    else if (headerLower.includes('nationality')) icon = "🌍";
-                   
+                    const hl = header.toLowerCase();
+                    if (hl.includes('name')) icon = "👤";
+                    else if (hl.includes('date')) icon = "📅";
+                    else if (hl.includes('book')) icon = "📚";
+                    else if (hl.includes('page')) icon = "📄";
+                    else if (hl.includes('lcr') || hl.includes('registry')) icon = "🔢";
+                    else if (hl.includes('sex')) icon = "⚥";
+                    else if (hl.includes('birth')) icon = "🎂";
+                    else if (hl.includes('place')) icon = "📍";
+                    else if (hl.includes('mother')) icon = "👩";
+                    else if (hl.includes('father')) icon = "👨";
+                    else if (hl.includes('nationality')) icon = "🌍";
                     return (
                       <div className="bg-gray-50 rounded-lg p-3 hover:shadow-md transition group" key={index}>
                         <div className="flex items-start gap-3">
-                          <div className="text-2xl group-hover:scale-110 transition">{icon}</div>
+                          <div className="text-2xl">{icon}</div>
                           <div className="flex-1">
-                            <div className="text-xs font-semibold text-blue-600 uppercase tracking-wider">
-                              {header}
-                            </div>
-                            <div className="text-gray-800 font-medium mt-1 break-words">
-                              {value}
-                            </div>
+                            <div className="text-xs font-semibold text-blue-600 uppercase">{header}</div>
+                            <div className="text-gray-800 font-medium mt-1">{value}</div>
                           </div>
                         </div>
                       </div>
@@ -1629,28 +1560,15 @@ function App() {
                 })}
               </div>
             </div>
-           
-            <div className="px-6 py-4 border-t border-gray-200 bg-gray-50 flex justify-end gap-3 flex-shrink-0">
-              <button
-                className="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition flex items-center gap-2"
-                onClick={() => {
-                  closeModal();
-                  const sheetName = isAllBooks ? selectedRecord.bookName : activeSheet?.name;
-                  const rowIndex = displayRows.findIndex(r => r.childName === selectedRecord.childName);
-                  const rowNumber = rowIndex !== -1 ? displayRows[rowIndex]?.rowNumber : null;
-                  if (rowNumber && sheetName) {
-                    openEditModal(selectedRecord, rowNumber);
-                  }
-                }}
-              >
-                <span>✏️</span> Edit Record
-              </button>
-              <button
-                className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition flex items-center gap-2"
-                onClick={closeModal}
-              >
-                <span>✕</span> Close
-              </button>
+            <div className="px-6 py-4 border-t border-gray-200 bg-gray-50 flex justify-end gap-3">
+              <button className="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition" onClick={() => {
+                closeModal();
+                const sheetName = isAllBooks ? selectedRecord.bookName : activeSheet?.name;
+                const rowIndex = displayRows.findIndex(r => r.childName === selectedRecord.childName);
+                const rowNumber = rowIndex !== -1 ? displayRows[rowIndex]?.rowNumber : null;
+                if (rowNumber && sheetName) openEditModal(selectedRecord, rowNumber);
+              }}>✏️ Edit Record</button>
+              <button className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition" onClick={closeModal}>Close</button>
             </div>
           </div>
         </div>
@@ -1662,84 +1580,39 @@ function App() {
           <div className="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden shadow-2xl animate-slide-up flex flex-col" onClick={(e) => e.stopPropagation()}>
             <div className="bg-gradient-to-r from-green-600 to-green-700 text-white px-6 py-4 flex-shrink-0">
               <div className="flex justify-between items-center">
-                <div>
-                  <h2 className="text-2xl font-bold">Add New Birth Record</h2>
-                  <p className="text-green-100 text-sm mt-1">Fill in the details below</p>
-                </div>
-                <button
-                  className="text-2xl hover:bg-white/20 rounded-full w-8 h-8 flex items-center justify-center transition"
-                  onClick={closeAddModal}
-                >
-                  ×
-                </button>
+                <div><h2 className="text-2xl font-bold">Add New Birth Record</h2><p className="text-green-100 text-sm">Fill in the details below</p></div>
+                <button className="text-2xl hover:bg-white/20 rounded-full w-8 h-8 flex items-center justify-center transition" onClick={closeAddModal}>×</button>
               </div>
             </div>
-           
             <div className="p-6 overflow-y-auto flex-1">
               {isAllBooks && (
                 <div className="mb-6">
                   <label className="block text-sm font-semibold text-gray-700 mb-2">📚 Select Registry Book</label>
-                  <select
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                    value={selectedSheetForAdd}
-                    onChange={(e) => handleSheetSelectionChange(e.target.value)}
-                  >
+                  <select className="w-full px-3 py-2 border border-gray-300 rounded-lg" value={selectedSheetForAdd} onChange={(e) => handleSheetSelectionChange(e.target.value)}>
                     <option value="">-- Select a registry book --</option>
-                    {sheetNames.map(sheet => (
-                      <option key={sheet} value={sheet}>{sheet}</option>
-                    ))}
+                    {sheetNames.map(sheet => <option key={sheet} value={sheet}>{sheet}</option>)}
                   </select>
-                  <p className="text-xs text-gray-500 mt-1">Choose which registry book this record belongs to</p>
                 </div>
               )}
-             
               {((isAllBooks && selectedSheetForAdd) || (!isAllBooks && selectedSheetForAdd)) && (
                 <div>
-                  <div className="mb-4 p-3 bg-blue-50 rounded-lg">
-                    <p className="text-sm text-blue-700">
-                      <strong>Adding to:</strong> {selectedSheetForAdd}
-                    </p>
-                  </div>
+                  <div className="mb-4 p-3 bg-blue-50 rounded-lg"><p className="text-sm text-blue-700"><strong>Adding to:</strong> {selectedSheetForAdd}</p></div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {(isAllBooks ? addFormHeaders : activeSheet?.data?.[0] || []).map((header, idx) => {
-                      if (header && header.trim()) {
-                        return (
-                          <div className="form-group" key={idx}>
-                            <label className="block text-sm font-semibold text-gray-700 mb-2">{header}</label>
-                            {renderFormField(header, formData[header] || '', (field, value) => {
-                              setFormData({ ...formData, [field]: value });
-                            })}
-                          </div>
-                        );
-                      }
+                      if (header && header.trim()) return (
+                        <div key={idx}><label className="block text-sm font-semibold text-gray-700 mb-2">{header}</label>
+                        {renderFormField(header, formData[header] || '', (field, value) => setFormData({ ...formData, [field]: value }))}</div>
+                      );
                       return null;
                     })}
                   </div>
                 </div>
               )}
-             
-              {isAllBooks && !selectedSheetForAdd && (
-                <div className="text-center py-8 text-gray-500">
-                  <p className="text-lg">📚</p>
-                  <p>Please select a registry book above to continue</p>
-                </div>
-              )}
+              {isAllBooks && !selectedSheetForAdd && <div className="text-center py-8 text-gray-500"><p>Please select a registry book above</p></div>}
             </div>
-           
-            <div className="px-6 py-4 border-t border-gray-200 bg-gray-50 flex justify-end gap-3 flex-shrink-0">
-              <button
-                className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition"
-                onClick={closeAddModal}
-              >
-                Cancel
-              </button>
-              <button
-                className={`px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition flex items-center gap-2 ${(!selectedSheetForAdd) ? 'opacity-50 cursor-not-allowed' : ''}`}
-                onClick={handleAddRecord}
-                disabled={!selectedSheetForAdd}
-              >
-                <span>💾</span> Save Record
-              </button>
+            <div className="px-6 py-4 border-t border-gray-200 bg-gray-50 flex justify-end gap-3">
+              <button className="px-4 py-2 bg-gray-600 text-white rounded-lg" onClick={closeAddModal}>Cancel</button>
+              <button className={`px-4 py-2 bg-green-600 text-white rounded-lg flex items-center gap-2 ${!selectedSheetForAdd ? 'opacity-50 cursor-not-allowed' : ''}`} onClick={handleAddRecord} disabled={!selectedSheetForAdd}><span>💾</span> Save Record</button>
             </div>
           </div>
         </div>
@@ -1751,74 +1624,38 @@ function App() {
           <div className="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden shadow-2xl animate-slide-up flex flex-col" onClick={(e) => e.stopPropagation()}>
             <div className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-6 py-4 flex-shrink-0">
               <div className="flex justify-between items-center">
-                <div>
-                  <h2 className="text-2xl font-bold">Edit Birth Record</h2>
-                  <p className="text-yellow-100 text-sm mt-1">Update the information below</p>
-                </div>
-                <button
-                  className="text-2xl hover:bg-white/20 rounded-full w-8 h-8 flex items-center justify-center transition"
-                  onClick={closeEditModal}
-                >
-                  ×
-                </button>
+                <div><h2 className="text-2xl font-bold">Edit Birth Record</h2><p className="text-yellow-100 text-sm">Update the information below</p></div>
+                <button className="text-2xl hover:bg-white/20 rounded-full w-8 h-8 flex items-center justify-center transition" onClick={closeEditModal}>×</button>
               </div>
             </div>
-           
             <div className="p-6 overflow-y-auto flex-1">
-              <div className="mb-4 p-3 bg-yellow-50 rounded-lg">
-                <p className="text-sm text-yellow-700">
-                  <strong>Editing Row #{editingRowNumber}</strong> in <strong>{isAllBooks ? editingRecord.bookName : activeSheet?.name}</strong>
-                </p>
-                <p className="text-xs text-gray-500 mt-1">⚠️ Make sure you're editing the correct record</p>
-              </div>
-             
+              <div className="mb-4 p-3 bg-yellow-50 rounded-lg"><p className="text-sm text-yellow-700"><strong>Editing Row #{editingRowNumber}</strong> in <strong>{isAllBooks ? editingRecord.bookName : activeSheet?.name}</strong></p></div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {editingRecord.headers?.map((header, idx) => {
                   if (isAllBooks && header === 'Book Name') return null;
                   if (header && header.trim()) {
                     const value = editingRecord.fullRecord?.[header] || '';
-                   
                     return (
-                      <div className="form-group" key={idx}>
-                        <label className="block text-sm font-semibold text-gray-700 mb-2">{header}</label>
-                        {renderFormField(header, value, (field, val) => {
-                          const updatedFullRecord = { ...editingRecord.fullRecord };
-                          updatedFullRecord[field] = val;
-                          setEditingRecord({ ...editingRecord, fullRecord: updatedFullRecord });
-                        }, true)}
-                      </div>
+                      <div key={idx}><label className="block text-sm font-semibold text-gray-700 mb-2">{header}</label>
+                      {renderFormField(header, value, (field, val) => {
+                        const updatedFullRecord = { ...editingRecord.fullRecord };
+                        updatedFullRecord[field] = val;
+                        setEditingRecord({ ...editingRecord, fullRecord: updatedFullRecord });
+                      }, true)}</div>
                     );
                   }
                   return null;
                 })}
               </div>
             </div>
-           
-            <div className="px-6 py-4 border-t border-gray-200 bg-gray-50 flex justify-between gap-3 flex-shrink-0">
-              <button
-                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
-                onClick={() => {
-                  const sheetName = isAllBooks ? editingRecord.bookName : activeSheet?.name;
-                  if (confirm("Are you sure you want to delete this record? This action cannot be undone.")) {
-                    handleDeleteRecord(sheetName, editingRowNumber);
-                  }
-                }}
-              >
-                🗑️ Delete Record
-              </button>
+            <div className="px-6 py-4 border-t border-gray-200 bg-gray-50 flex justify-between gap-3">
+              <button className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition" onClick={() => {
+                const sheetName = isAllBooks ? editingRecord.bookName : activeSheet?.name;
+                if (confirm("Delete this record?")) handleDeleteRecord(sheetName, editingRowNumber);
+              }}>🗑️ Delete Record</button>
               <div className="flex gap-3">
-                <button
-                  className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition"
-                  onClick={closeEditModal}
-                >
-                  Cancel
-                </button>
-                <button
-                  className="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition flex items-center gap-2"
-                  onClick={handleUpdateRecord}
-                >
-                  <span>💾</span> Update Record
-                </button>
+                <button className="px-4 py-2 bg-gray-600 text-white rounded-lg" onClick={closeEditModal}>Cancel</button>
+                <button className="px-4 py-2 bg-yellow-500 text-white rounded-lg flex items-center gap-2" onClick={handleUpdateRecord}><span>💾</span> Update Record</button>
               </div>
             </div>
           </div>
