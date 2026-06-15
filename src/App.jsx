@@ -205,7 +205,7 @@ function App() {
       filename: `birth_certificate_${printData.issuedTo.replace(/\s/g, '_')}.pdf`,
       image: { type: 'jpeg', quality: 0.98 },
       html2canvas: { scale: 2, letterRendering: true },
-      jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+      jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
     };
     html2pdf().set(opt).from(element).save();
     toast.success("PDF generated successfully!");
@@ -844,13 +844,16 @@ function App() {
   const recentActivity = getRecentActivity();
   const avgRecordsPerBook = (stats.totalRecords / stats.totalSheets).toFixed(1);
 
-  // Helper to get field value from record
+  // Helper to get field value from record - for certificate printing
   const getFieldValue = (record, keywords) => {
     if (!record || !record.fullRecord || !record.headers) return '';
     const index = record.headers.findIndex(h => 
       keywords.some(keyword => h?.toLowerCase().includes(keyword))
     );
-    return index !== -1 ? record.fullRecord[index] : '';
+    if (index !== -1 && record.fullRecord[index]) {
+      return record.fullRecord[index];
+    }
+    return '';
   };
 
   return (
@@ -1296,7 +1299,7 @@ function App() {
         )}
       </main>
 
-      {/* Print Certificate Modal - Exact match to the attached image layout */}
+      {/* Print Certificate Modal - Exact match to second attached image */}
       {isPrintModalOpen && selectedRecord && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 animate-fade-in">
           <div className="bg-white rounded-2xl w-full max-w-3xl max-h-[90vh] overflow-hidden shadow-2xl animate-slide-up flex flex-col" onClick={(e) => e.stopPropagation()}>
@@ -1367,7 +1370,7 @@ function App() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">Verified By (Clerk)</label>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">Verified By (Clerk III)</label>
                   <input
                     type="text"
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -1407,31 +1410,25 @@ function App() {
                 </div>
               </div>
 
-              {/* Certificate Preview - Exact match to attached images (no background image) */}
+              {/* Certificate Preview - EXACT match to second image layout */}
               <div className="border-t border-gray-200 pt-4">
                 <h3 className="text-lg font-semibold text-gray-800 mb-4">Preview</h3>
-                <div ref={printRef} className="relative bg-white border-2 border-gray-300 shadow-xl rounded-none" style={{ fontFamily: "'Courier New', 'Times New Roman', monospace, serif", width: '100%' }}>
-                  <div className="p-6 md:p-8">
-                    {/* LCR Form No. */}
+                <div ref={printRef} className="relative bg-white border border-gray-300 shadow-lg" style={{ fontFamily: "'Times New Roman', 'Courier New', monospace", width: '100%' }}>
+                  <div className="p-6">
+                    {/* OFFICE HEADER */}
                     <div className="text-center mb-2">
-                      <p className="text-xs font-mono">LCR Form No. 1A</p>
-                      <p className="text-xs italic">(Birth – Available)</p>
-                    </div>
-
-                    {/* Office Header */}
-                    <div className="text-center mb-4">
-                      <h1 className="text-lg font-bold uppercase tracking-wide">OFFICE OF THE MUNICIPAL CIVIL REGISTRAR</h1>
+                      <h1 className="text-xl font-bold uppercase tracking-wide">OFFICE OF THE MUNICIPAL CIVIL REGISTRAR</h1>
                     </div>
 
                     {/* BIRTH AVAILABLE */}
-                    <div className="text-center mb-6">
-                      <h2 className="text-xl font-bold uppercase tracking-wider">BIRTH AVAILABLE</h2>
+                    <div className="text-center mb-4">
+                      <h2 className="text-lg font-bold uppercase">BIRTH AVAILABLE</h2>
                     </div>
 
-                    {/* Date */}
+                    {/* Date section - right aligned */}
                     <div className="flex justify-end mb-4">
                       <div className="text-right">
-                        <p className="text-sm">
+                        <p className="text-sm font-mono">
                           {printData.date ? new Date(printData.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }).toUpperCase() : '___________'}
                         </p>
                         <p className="text-xs">Date</p>
@@ -1439,64 +1436,64 @@ function App() {
                     </div>
 
                     {/* WE CERTIFY statement */}
-                    <div className="mb-6">
-                      <p className="text-sm leading-relaxed">
+                    <div className="mb-4">
+                      <p className="text-sm">
                         WE CERTIFY that, among others the following facts of Birth appear in our Register of Births on Page <strong>{printData.pageNumber || '___'}</strong> of book number <strong>{printData.bookNumber || '___'}</strong>:
                       </p>
                     </div>
 
-                    {/* Data fields - exactly as shown in the image with colons */}
-                    <div className="space-y-1 text-sm mb-8 font-mono">
+                    {/* Data fields - table style with dashes like second image */}
+                    <div className="space-y-0.5 text-sm mb-6">
                       <div className="flex">
-                        <span className="font-bold w-48">PRN</span>
+                        <span className="font-medium w-48">PRN</span>
                         <span>: {getFieldValue(selectedRecord, ['prn']) || '___________'}</span>
                       </div>
                       <div className="flex">
-                        <span className="font-bold w-48">LCR Registry Number</span>
+                        <span className="font-medium w-48">LCR Registry Number</span>
                         <span>: {getFieldValue(selectedRecord, ['lcr', 'registry']) || '___________'}</span>
                       </div>
                       <div className="flex">
-                        <span className="font-bold w-48">Date of Registration</span>
+                        <span className="font-medium w-48">Date of Registration</span>
                         <span>: {getFieldValue(selectedRecord, ['date of registration']) || '___________'}</span>
                       </div>
                       <div className="flex">
-                        <span className="font-bold w-48">Name of Child</span>
+                        <span className="font-medium w-48">Name of Child</span>
                         <span>: {getFieldValue(selectedRecord, ['name of child']) || '___________'}</span>
                       </div>
                       <div className="flex">
-                        <span className="font-bold w-48">Sex</span>
+                        <span className="font-medium w-48">Sex</span>
                         <span>: {getFieldValue(selectedRecord, ['sex', 'gender']) || '___________'}</span>
                       </div>
                       <div className="flex">
-                        <span className="font-bold w-48">Date of Birth</span>
+                        <span className="font-medium w-48">Date of Birth</span>
                         <span>: {getFieldValue(selectedRecord, ['date of birth']) || '___________'}</span>
                       </div>
                       <div className="flex">
-                        <span className="font-bold w-48">Place of Birth</span>
+                        <span className="font-medium w-48">Place of Birth</span>
                         <span>: {getFieldValue(selectedRecord, ['place of birth']) || '___________'}</span>
                       </div>
                       <div className="flex">
-                        <span className="font-bold w-48">Name of Mother</span>
+                        <span className="font-medium w-48">Name of Mother</span>
                         <span>: {getFieldValue(selectedRecord, ['name of mother']) || '___________'}</span>
                       </div>
                       <div className="flex">
-                        <span className="font-bold w-48">Nationality</span>
+                        <span className="font-medium w-48">Nationality</span>
                         <span>: FILIPINO</span>
                       </div>
                       <div className="flex">
-                        <span className="font-bold w-48">Name of Father</span>
+                        <span className="font-medium w-48">Name of Father</span>
                         <span>: {getFieldValue(selectedRecord, ['name of father']) || '___________'}</span>
                       </div>
                       <div className="flex">
-                        <span className="font-bold w-48">Nationality</span>
+                        <span className="font-medium w-48">Nationality</span>
                         <span>: FILIPINO</span>
                       </div>
                       <div className="flex">
-                        <span className="font-bold w-48">Date of Marriage of Parents</span>
+                        <span className="font-medium w-48">Date of Marriage of Parents</span>
                         <span>: {getFieldValue(selectedRecord, ['date of marriage']) || '___________'}</span>
                       </div>
                       <div className="flex">
-                        <span className="font-bold w-48">Place of Marriage of Parents</span>
+                        <span className="font-medium w-48">Place of Marriage of Parents</span>
                         <span>: {getFieldValue(selectedRecord, ['place of marriage']) || '___________'}</span>
                       </div>
                     </div>
@@ -1508,29 +1505,28 @@ function App() {
                       </p>
                     </div>
 
-                    {/* Signature Section - Two column layout as in image */}
-                    <div className="grid grid-cols-2 gap-8 mb-6">
-                      <div className="text-left">
-                        <p className="font-bold text-sm">{printData.asstRegistrationOfficer || '____________________'}</p>
-                        <p className="text-xs">ASST. REGISTRATION OFFICER</p>
-                      </div>
-                      <div className="text-left">
-                        <p className="text-sm mb-1">Verified by:</p>
-                        <p className="font-bold text-sm">{printData.municipalCivilRegistrar || '____________________'}</p>
-                        <p className="text-xs">CLERK III</p>
-                      </div>
+                    {/* Signature Section - Matching second image layout */}
+                    <div className="mb-6">
+                      <p className="font-bold text-sm">{printData.asstRegistrationOfficer || '____________________'}</p>
+                      <p className="text-xs">ASST. REGISTRATION OFFICER</p>
+                    </div>
+
+                    <div className="mb-6">
+                      <p className="text-sm mb-1">Verified by:</p>
+                      <p className="font-bold text-sm">{printData.municipalCivilRegistrar || '____________________'}</p>
+                      <p className="text-xs">CLERK III</p>
                     </div>
 
                     {/* O.R. Information */}
                     <div className="space-y-0.5 text-sm mb-4">
-                      <p><span className="font-semibold">O.R Number:</span> {printData.orNumber || '___________'}</p>
-                      <p><span className="font-semibold">Amount Paid:</span> {printData.amountPaid ? `${printData.amountPaid}` : '___________'}</p>
+                      <p><span className="font-semibold">O.R. Number:</span> {printData.orNumber || '___________'}</p>
+                      <p><span className="font-semibold">Amount Paid:</span> {printData.amountPaid ? printData.amountPaid : '___________'}</p>
                       <p><span className="font-semibold">Date Paid:</span> {printData.datePaid ? new Date(printData.datePaid).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }).toUpperCase() : '___________'}</p>
                     </div>
 
-                    {/* NOTE */}
-                    <div className="mt-6 text-xs text-gray-600 italic">
-                      <p>NOTE: This Certification is not valid if has mark of erasure or alteration of any entry</p>
+                    {/* NOTE - Exact wording from second image */}
+                    <div className="mt-4 text-xs text-gray-600 italic">
+                      <p>NOTE: This Certification is not valid if the mark of issuance or allotment of any entry</p>
                     </div>
                   </div>
                 </div>
