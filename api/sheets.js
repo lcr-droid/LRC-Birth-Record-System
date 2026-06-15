@@ -1,14 +1,35 @@
-// api/sheets.js - Vercel Serverless Function with Caching
+// api/sheets.js - Vercel Serverless Function with Enhanced Caching
 import { google } from 'googleapis';
 
-// Simple in-memory cache (works for serverless functions)
+// In-memory cache with TTL
 let cache = {
   allSheets: null,
   sheetData: new Map(),
+  stats: null,
   timestamp: null
 };
 
-const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes cache
+const CACHE_DURATION = 10 * 60 * 1000; // 10 minutes cache (increased from 5)
+const RATE_LIMIT_WINDOW = 60000; // 1 minute
+let requestCount = 0;
+let lastReset = Date.now();
+
+function resetRateLimitIfNeeded() {
+  const now = Date.now();
+  if (now - lastReset >= RATE_LIMIT_WINDOW) {
+    requestCount = 0;
+    lastReset = now;
+  }
+}
+
+function checkRateLimit() {
+  resetRateLimitIfNeeded();
+  if (requestCount >= 10) { // Max 10 requests per minute
+    return false;
+  }
+  requestCount++;
+  return true;
+}
 
 function isCacheValid() {
   return cache.timestamp && (Date.now() - cache.timestamp) < CACHE_DURATION;
@@ -25,8 +46,16 @@ export default async function handler(req, res) {
     return res.status(200).end();
   }
   
+  // Rate limiting
+  if (!checkRateLimit()) {
+    return res.status(429).json({ 
+      success: false, 
+      error: 'Rate limit exceeded. Please wait a moment.',
+      retryAfter: 60
+    });
+  }
+  
   try {
-    // Get environment variables
     const clientEmail = process.env.GOOGLE_CLIENT_EMAIL;
     const privateKey = process.env.GOOGLE_PRIVATE_KEY;
     const spreadsheetId = process.env.SPREADSHEET_ID;
@@ -51,7 +80,6 @@ export default async function handler(req, res) {
       
       // Get all sheets with data - CHECK CACHE FIRST
       if (all === 'true' || action === 'getAllSheets') {
-        // Return cached data if valid
         if (isCacheValid() && cache.allSheets) {
           console.log('Returning cached all sheets data');
           return res.json({ 
@@ -68,33 +96,34 @@ export default async function handler(req, res) {
         const sheetsList = metadata.data.sheets || [];
         const result = {};
         
-        // Process sheets one by one to avoid quota issues
-        for (let i = 0; i < sheetsList.length; i++) {
-          const sheet = sheetsList[i];
-          const name = sheet.properties.title;
+        // Process sheets in parallel but with concurrency limit
+        const batchSize = 3;
+        for (let i = 0; i < sheetsList.length; i += batchSize) {
+          const batch = sheetsList.slice(i, i + batchSize);
+          await Promise.all(batch.map(async (sheet) => {
+            const name = sheet.properties.title;
+            try {
+              const response = await sheets.spreadsheets.values.get({
+                spreadsheetId,
+                range: `'${name}'!A1:Z1000`,
+              });
+              const data = response.data.values || [];
+              const headers = data[0] || [];
+              const rows = data.slice(1);
+              
+              result[name] = { headers, data: rows, totalRecords: rows.length };
+            } catch (sheetError) {
+              console.error(`Error fetching sheet ${name}:`, sheetError.message);
+              result[name] = { headers: [], data: [], totalRecords: 0, error: sheetError.message };
+            }
+          }));
           
-          try {
-            const response = await sheets.spreadsheets.values.get({
-              spreadsheetId,
-              range: `'${name}'!A1:Z1000`,
-            });
-            const data = response.data.values || [];
-            const headers = data[0] || [];
-            const rows = data.slice(1);
-            
-            result[name] = { headers, data: rows, totalRecords: rows.length };
-          } catch (sheetError) {
-            console.error(`Error fetching sheet ${name}:`, sheetError.message);
-            result[name] = { headers: [], data: [], totalRecords: 0, error: sheetError.message };
-          }
-          
-          // Add delay between requests to avoid rate limiting
-          if (i < sheetsList.length - 1) {
-            await new Promise(resolve => setTimeout(resolve, 500));
+          // Add delay between batches
+          if (i + batchSize < sheetsList.length) {
+            await new Promise(resolve => setTimeout(resolve, 1000));
           }
         }
         
-        // Update cache
         cache.allSheets = {
           data: result,
           totalSheets: sheetsList.length
@@ -106,7 +135,6 @@ export default async function handler(req, res) {
       
       // Get specific sheet data - CHECK CACHE FIRST
       if (sheetName) {
-        // Check if we have cached data for this sheet
         const cachedSheet = cache.sheetData.get(sheetName);
         if (cachedSheet && (Date.now() - cachedSheet.timestamp) < CACHE_DURATION) {
           console.log(`Returning cached data for sheet: ${sheetName}`);
@@ -130,7 +158,6 @@ export default async function handler(req, res) {
         const headers = data[0] || [];
         const rows = data.slice(1);
         
-        // Cache the sheet data
         cache.sheetData.set(sheetName, {
           headers: headers,
           data: rows,
@@ -149,6 +176,11 @@ export default async function handler(req, res) {
       
       const metadata = await sheets.spreadsheets.get({ spreadsheetId });
       const sheetNames = (metadata.data.sheets || []).map(s => s.properties.title);
+      
+      // Cache the sheet names
+      if (!cache.allSheets) cache.allSheets = {};
+      cache.allSheets.sheetNames = sheetNames;
+      cache.timestamp = Date.now();
       
       return res.json({ success: true, sheets: sheetNames });
     }
@@ -173,9 +205,10 @@ export default async function handler(req, res) {
           resource: { values: [newRow] },
         });
         
-        // Invalidate cache for this sheet
+        // Invalidate cache
         cache.sheetData.delete(sheetName);
         cache.allSheets = null;
+        cache.stats = null;
         cache.timestamp = null;
         
         return res.json({ success: true, message: 'Record added successfully' });
@@ -202,9 +235,10 @@ export default async function handler(req, res) {
           resource: { values: [updateRow] },
         });
         
-        // Invalidate cache for this sheet
+        // Invalidate cache
         cache.sheetData.delete(sheetName);
         cache.allSheets = null;
+        cache.stats = null;
         cache.timestamp = null;
         
         return res.json({ success: true, message: 'Record updated successfully' });
@@ -216,9 +250,10 @@ export default async function handler(req, res) {
           range: `'${sheetName}'!A${rowNumber}:Z${rowNumber}`,
         });
         
-        // Invalidate cache for this sheet
+        // Invalidate cache
         cache.sheetData.delete(sheetName);
         cache.allSheets = null;
+        cache.stats = null;
         cache.timestamp = null;
         
         return res.json({ success: true, message: 'Record deleted successfully' });
