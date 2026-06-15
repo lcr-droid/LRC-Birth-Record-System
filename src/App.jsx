@@ -1414,11 +1414,6 @@ function App() {
               <div className="border-t border-gray-200 pt-4">
                 <h3 className="text-lg font-semibold text-gray-800 mb-4">Preview</h3>
                 <div ref={printRef} className="relative bg-white border border-gray-300 shadow-lg" style={{ fontFamily: "'Times New Roman', 'Courier New', monospace", width: '100%' }}>
-                  {/* Optional Background Image - Commented out to avoid 404 error */}
-                  {/* <div className="absolute inset-0 opacity-10 pointer-events-none">
-                    <img src="/bg_image.png" alt="Background" className="w-full h-full object-cover" onError={(e) => e.target.style.display = 'none'} />
-                  </div> */}
-                 
                   <div className="relative p-6 z-10">
                     {/* UPPER SECTION - matches upper.png */}
                     <div className="text-center mb-4">
@@ -1449,35 +1444,35 @@ function App() {
                     <div className="space-y-1 text-sm mb-6">
                       <div className="flex">
                         <span className="font-medium w-44">PRN</span>
-                        <span>: {getFieldValue(selectedRecord, ['prn']) || '___________'}</span>
+                        <span>: {(() => { const val = getFieldValue(selectedRecord, ['prn']); return val || '___________'; })()}</span>
                       </div>
                       <div className="flex">
                         <span className="font-medium w-44">LCR Registry Number</span>
-                        <span>: {getFieldValue(selectedRecord, ['lcr', 'registry']) || '___________'}</span>
+                        <span>: {(() => { const val = getFieldValue(selectedRecord, ['lcr', 'registry']); return val || '___________'; })()}</span>
                       </div>
                       <div className="flex">
                         <span className="font-medium w-44">Date of Registration</span>
-                        <span>: {getFieldValue(selectedRecord, ['date of registration']) || '___________'}</span>
+                        <span>: {(() => { const val = getFieldValue(selectedRecord, ['date of registration']); return val || '___________'; })()}</span>
                       </div>
                       <div className="flex">
                         <span className="font-medium w-44">Name of Child</span>
-                        <span>: {getFieldValue(selectedRecord, ['name of child']) || '___________'}</span>
+                        <span>: {(() => { const val = getFieldValue(selectedRecord, ['name of child']); return val || '___________'; })()}</span>
                       </div>
                       <div className="flex">
                         <span className="font-medium w-44">Sex</span>
-                        <span>: {getFieldValue(selectedRecord, ['sex', 'gender']) || '___________'}</span>
+                        <span>: {(() => { const val = getFieldValue(selectedRecord, ['sex', 'gender']); return val || '___________'; })()}</span>
                       </div>
                       <div className="flex">
                         <span className="font-medium w-44">Date of Birth</span>
-                        <span>: {getFieldValue(selectedRecord, ['date of birth']) || '___________'}</span>
+                        <span>: {(() => { const val = getFieldValue(selectedRecord, ['date of birth']); return val || '___________'; })()}</span>
                       </div>
                       <div className="flex">
                         <span className="font-medium w-44">Place of Birth</span>
-                        <span>: {getFieldValue(selectedRecord, ['place of birth']) || '___________'}</span>
+                        <span>: {(() => { const val = getFieldValue(selectedRecord, ['place of birth']); return val || '___________'; })()}</span>
                       </div>
                       <div className="flex">
                         <span className="font-medium w-44">Name of Mother</span>
-                        <span>: {getFieldValue(selectedRecord, ['name of mother']) || '___________'}</span>
+                        <span>: {(() => { const val = getFieldValue(selectedRecord, ['name of mother']); return val || '___________'; })()}</span>
                       </div>
                       <div className="flex">
                         <span className="font-medium w-44">Nationality</span>
@@ -1485,7 +1480,7 @@ function App() {
                       </div>
                       <div className="flex">
                         <span className="font-medium w-44">Name of Father</span>
-                        <span>: {getFieldValue(selectedRecord, ['name of father']) || '___________'}</span>
+                        <span>: {(() => { const val = getFieldValue(selectedRecord, ['name of father']); return val || '___________'; })()}</span>
                       </div>
                       <div className="flex">
                         <span className="font-medium w-44">Nationality</span>
@@ -1493,11 +1488,11 @@ function App() {
                       </div>
                       <div className="flex">
                         <span className="font-medium w-44">Date of Marriage of Parents</span>
-                        <span>: {getFieldValue(selectedRecord, ['date of marriage']) || '___________'}</span>
+                        <span>: {(() => { const val = getFieldValue(selectedRecord, ['date of marriage']); return val || '___________'; })()}</span>
                       </div>
                       <div className="flex">
                         <span className="font-medium w-44">Place of Marriage of Parents</span>
-                        <span>: {getFieldValue(selectedRecord, ['place of marriage']) || '___________'}</span>
+                        <span>: {(() => { const val = getFieldValue(selectedRecord, ['place of marriage']); return val || '___________'; })()}</span>
                       </div>
                     </div>
 
@@ -1553,7 +1548,7 @@ function App() {
           </div>
         </div>
       )}
-
+                  
       {/* View Details Modal */}
       {isModalOpen && selectedRecord && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 animate-fade-in">
