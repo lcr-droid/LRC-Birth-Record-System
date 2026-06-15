@@ -1015,7 +1015,7 @@ function App() {
                   </div>
                  
                   {/* Content - compact to fit one page */}
-                  <div className="relative pt-35 py-6 px-8 z-10">
+                  <div className="relative pt-30 py-6 px-8 z-10">
                     {/* LCR Form No. 1A - LEFT ALIGNED */}
                     <div className="mb-1">
                       <p className="text-sm font-bold">LCR Form No. 1A</p>
