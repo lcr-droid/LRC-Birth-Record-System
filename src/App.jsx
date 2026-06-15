@@ -1015,7 +1015,7 @@ function App() {
                   </div>
                  
                   {/* Content - positioned with top margin to avoid covering upper image */}
-                  <div className="relative pt-20 pb-8 px-8 z-10">
+                  <div className="relative pt-40 pb-8 px-8 z-10">
                     {/* LCR Form No. 1A */}
                     <div className="text-center mb-1">
                       <p className="text-sm font-bold">LCR Form No. 1A</p>
