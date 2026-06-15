@@ -1007,7 +1007,7 @@ function App() {
 
               {/* Certificate Preview - EXACT match to second image */}
               <div className="border-t border-gray-200 pt-4">
-                <h3 className="text-lg font-semibold text-gray-800 mb-4">Preview</h3>
+                <h3 className="text-lg font-semibold text-gray-800">Preview</h3>
                 <div ref={printRef} className="relative bg-white border-2 border-gray-400 shadow-xl overflow-hidden" style={{ fontFamily: "'Times New Roman', serif", width: '100%' }}>
                   {/* Background Image */}
                   <div className="absolute inset-0 opacity-10 pointer-events-none">
