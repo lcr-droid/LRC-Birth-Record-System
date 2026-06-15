@@ -36,7 +36,6 @@ function App() {
     issuedTo: '',
     asstRegistrationOfficer: '',
     verifiedBy: '',
-    clerkName: '',
     orNumber: '',
     amountPaid: '',
     datePaid: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
@@ -1415,10 +1414,10 @@ function App() {
               <div className="border-t border-gray-200 pt-4">
                 <h3 className="text-lg font-semibold text-gray-800 mb-4">Preview</h3>
                 <div ref={printRef} className="relative bg-white border border-gray-300 shadow-lg" style={{ fontFamily: "'Times New Roman', 'Courier New', monospace", width: '100%' }}>
-                  {/* Background Image */}
-                  <div className="absolute inset-0 opacity-10 pointer-events-none">
-                    <img src="/bg_image.png" alt="Background" className="w-full h-full object-cover" />
-                  </div>
+                  {/* Optional Background Image - Commented out to avoid 404 error */}
+                  {/* <div className="absolute inset-0 opacity-10 pointer-events-none">
+                    <img src="/bg_image.png" alt="Background" className="w-full h-full object-cover" onError={(e) => e.target.style.display = 'none'} />
+                  </div> */}
                  
                   <div className="relative p-6 z-10">
                     {/* UPPER SECTION - matches upper.png */}
