@@ -1015,7 +1015,7 @@ function App() {
                   </div>
                  
                   {/* Content - compact to fit one page */}
-                  <div className="relative pt-20 py-6 px-8 z-10">
+                  <div className="relative pt-40 py-6 px-8 z-10">
                     {/* LCR Form No. 1A - LEFT ALIGNED */}
                     <div className="mb-1">
                       <p className="text-sm font-bold">LCR Form No. 1A</p>
@@ -1125,17 +1125,17 @@ function App() {
                       </p>
                     </div>
 
-                    {/* ASST. REGISTRATION OFFICER section */}
-                    <div className="mb-4">
-                      <p className="font-bold text-sm">{printData.asstRegistrationOfficer || '____________________'}</p>
-                      <p className="text-sm font-bold">ASST. REGISTRATION OFFICER</p>
-                    </div>
-
-                    {/* Verified by section */}
-                    <div className="mb-5">
-                      <p className="text-sm font-bold mb-1">Verified by:</p>
-                      <p className="font-bold text-sm">{printData.municipalCivilRegistrar || '____________________'}</p>
-                      <p className="text-sm font-bold">CLERK III</p>
+                    {/* Signature Section - ASST on RIGHT, Verified by on LEFT - same row */}
+                    <div className="flex justify-between items-start mb-4">
+                      <div className="text-left">
+                        <p className="text-xs font-bold mb-1">Verified by:</p>
+                        <p className="font-bold text-sm">{printData.municipalCivilRegistrar || '____________________'}</p>
+                        <p className="text-xs font-bold">CLERK III</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-bold text-sm">{printData.asstRegistrationOfficer || '____________________'}</p>
+                        <p className="text-xs font-bold">ASST. REGISTRATION OFFICER</p>
+                      </div>
                     </div>
 
                     {/* O.R. Information */}
