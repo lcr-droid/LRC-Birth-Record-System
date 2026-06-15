@@ -71,7 +71,7 @@
   min-height: 0; /* Important for Firefox */
 }
 
-/* Print styles - Updated for legal size long format */
+/* Print styles - Clean official certificate */
 @media print {
   body * {
     visibility: hidden;
@@ -84,21 +84,17 @@
     left: 0;
     top: 0;
     width: 100%;
-    padding: 0.3in;
+    padding: 0.4in;
   }
   @page {
-    size: legal;
+    size: A4;
     margin: 0.4in;
   }
 }
 
-/* Certificate styling */
+/* No background image - removed */
 .certificate-bg {
-  background-image: url('/bg_image.png');
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: cover;
-  opacity: 0.1;
+  display: none;
 }
 
 /* Custom scrollbar styles */
