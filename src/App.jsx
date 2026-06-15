@@ -1014,9 +1014,10 @@ function App() {
                     <img src="/bg_image.png" alt="Background" className="w-full h-full object-cover" />
                   </div>
                  
-                  <div className="relative pt-20 py-8 px-10 z-10">
-                    {/* LCR Form No. 1A - CENTERED */}
-                    <div className="text-center mb-1">
+                  {/* Content - compact to fit one page */}
+                  <div className="relative pt-20 py-6 px-8 z-10">
+                    {/* LCR Form No. 1A - LEFT ALIGNED */}
+                    <div className="mb-1">
                       <p className="text-sm font-bold">LCR Form No. 1A</p>
                       <p className="text-sm italic">(Birth – Available)</p>
                     </div>
