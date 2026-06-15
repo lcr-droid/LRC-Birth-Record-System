@@ -70,3 +70,32 @@
   overflow-y: auto;
   min-height: 0; /* Important for Firefox */
 }
+
+/* Print styles */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #print-certificate, #print-certificate * {
+    visibility: visible;
+  }
+  #print-certificate {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+  }
+  @page {
+    size: letter;
+    margin: 0.5in;
+  }
+}
+
+/* Certificate styling */
+.certificate-bg {
+  background-image: url('/bg_image.png');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  opacity: 0.1;
+}
