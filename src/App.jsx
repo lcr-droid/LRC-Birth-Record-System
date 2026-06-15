@@ -58,7 +58,7 @@ function App() {
         setAllSheets({ sheets: response.sheets, totalSheets: response.totalSheets });
         setAvailableSheets(Object.keys(response.sheets));
         if (response.fromCache) {
-          toast.success("📊 Data loaded from cache", { duration: 2000 });
+          toast.success("Data loaded from cache", { duration: 2000 });
         }
       } else {
         throw new Error(response.error);
@@ -90,7 +90,7 @@ function App() {
         setSelectedMonth("all");
         setSearchTerm("");
         if (response.fromCache) {
-          toast.success(`📄 Loaded ${sheetName} from cache`, { duration: 1500 });
+          toast.success(`Loaded ${sheetName} from cache`, { duration: 1500 });
         }
       } else {
         throw new Error(response.error);
@@ -141,7 +141,7 @@ function App() {
       setIsAllBooks(true);
       setSelectedMonth("all");
       setSearchTerm("");
-      toast.success(`📚 Loaded ${sortedSheets.length} books with ${allData.length} records`, { id: "all-books" });
+      toast.success(`Loaded ${sortedSheets.length} books with ${allData.length} records`, { id: "all-books" });
     } else {
       console.error("No data available for All Books view");
       toast.error("Unable to load All Registry Books. Please refresh the page and try again.", { id: "all-books" });
@@ -309,7 +309,7 @@ function App() {
       const response = await api.addRecord(sheetName, processedData);
      
       if (response.success) {
-        toast.success(`✅ Record added successfully to ${sheetName}!`, { id: "add-record" });
+        toast.success(`Record added successfully to ${sheetName}!`, { id: "add-record" });
         closeAddModal();
        
         if (isAllBooks) {
@@ -385,7 +385,7 @@ function App() {
       const response = await api.updateRecord(sheetName, editingRowNumber, recordArray);
      
       if (response.success) {
-        toast.success("✅ Record updated successfully!", { id: "update-record" });
+        toast.success("Record updated successfully!", { id: "update-record" });
         closeEditModal();
         if (isAllBooks) {
           await fetchAllBooks();
@@ -412,7 +412,7 @@ function App() {
       const response = await api.deleteRecord(sheetName, rowNumber);
      
       if (response.success) {
-        toast.success("🗑️ Record deleted successfully!", { id: "delete-record" });
+        toast.success("Record deleted successfully!", { id: "delete-record" });
         closeEditModal();
         await fetchSpecificSheet(sheetName);
       } else {
@@ -855,7 +855,7 @@ function App() {
   const topBooks = getTopBooks();
   const avgRecordsPerBook = (stats.totalRecords / stats.totalSheets).toFixed(1);
 
-  // Helper function to get field value safely
+  // Helper function to get field value safely for print
   const getPrintFieldValue = (keywords) => {
     const val = getFieldValue(selectedRecord, keywords);
     return val || '___________';
@@ -892,7 +892,7 @@ function App() {
       {/* Sidebar */}
       <aside className="w-80 fixed h-full overflow-hidden shadow-xl flex flex-col" style={{ background: 'rgba(26, 42, 79, 0.92)' }}>
         <div className="p-6 border-b border-white/30">
-          <h2 className="text-2xl font-bold mb-1 text-white">📊 LCR Registry</h2>
+          <h2 className="text-2xl font-bold mb-1 text-white">LCR Registry</h2>
           <p className="text-sm text-white">Birth Records System</p>
         </div>
        
@@ -1137,7 +1137,7 @@ function App() {
               <div className="flex items-center justify-between mb-4">
                 <div>
                   <h1 className="text-2xl font-bold text-gray-800">
-                    {isAllBooks ? "📚 All Registry Books" : activeSheet?.name}
+                    {isAllBooks ? "All Registry Books" : activeSheet?.name}
                     {isAllBooks && (
                       <span className="inline-block ml-3 bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm">
                         {sheetNames.length} Books
@@ -1254,30 +1254,12 @@ function App() {
                           <td className="px-4 py-3 text-sm font-medium text-gray-800">{row.childName || "—"}</td>
                           <td className="px-4 py-3">
                             <div className="flex gap-2">
-                              <button
-                                className="px-3 py-1 bg-green-600 text-white rounded-lg text-sm hover:bg-green-700 transition"
-                                onClick={() => openModal(row)}
-                              >
-                                View Details
-                              </button>
-                              <button
-                                className="px-3 py-1 bg-yellow-500 text-white rounded-lg text-sm hover:bg-yellow-600 transition"
-                                onClick={() => {
-                                  const sheetName = isAllBooks ? row.bookName : activeSheet?.name;
-                                  openEditModal(row, row.rowNumber);
-                                }}
-                              >
-                                ✏️ Edit
-                              </button>
-                              <button
-                                className="px-3 py-1 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition"
-                                onClick={() => openPrintModal(row)}
-                              >
-                                🖨️ Print
-                              </button>
+                              <button className="px-3 py-1 bg-green-600 text-white rounded-lg text-sm hover:bg-green-700 transition" onClick={() => openModal(row)}>View Details</button>
+                              <button className="px-3 py-1 bg-yellow-500 text-white rounded-lg text-sm hover:bg-yellow-600 transition" onClick={() => { const sheetName = isAllBooks ? row.bookName : activeSheet?.name; openEditModal(row, row.rowNumber); }}>✏️ Edit</button>
+                              <button className="px-3 py-1 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition" onClick={() => openPrintModal(row)}>🖨️ Print</button>
                             </div>
                           </td>
-                        </td>
+                        </tr>
                       ))}
                     </tbody>
                   </table>
@@ -1288,15 +1270,7 @@ function App() {
                 <div className="text-6xl mb-4">🔍</div>
                 <p className="text-gray-600 mb-4">No records found matching your search criteria.</p>
                 {(selectedMonth !== "all" || searchTerm) && (
-                  <button
-                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
-                    onClick={() => {
-                      setSelectedMonth("all");
-                      setSearchTerm("");
-                    }}
-                  >
-                    Clear Filters
-                  </button>
+                  <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition" onClick={() => { setSelectedMonth("all"); setSearchTerm(""); }}>Clear Filters</button>
                 )}
               </div>
             )}
@@ -1314,138 +1288,32 @@ function App() {
                   <h2 className="text-2xl font-bold">LCR Birth Certificate</h2>
                   <p className="text-blue-100 text-sm mt-1">Fill in the certificate details</p>
                 </div>
-                <button
-                  className="text-2xl hover:bg-white/20 rounded-full w-8 h-8 flex items-center justify-center transition"
-                  onClick={closePrintModal}
-                >
-                  ×
-                </button>
+                <button className="text-2xl hover:bg-white/20 rounded-full w-8 h-8 flex items-center justify-center transition" onClick={closePrintModal}>×</button>
               </div>
             </div>
            
             <div className="flex-1 overflow-y-auto p-6">
-              {/* Editable Form Fields */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 pb-4 border-b border-gray-200">
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">Date of Issue</label>
-                  <input
-                    type="date"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    value={printData.date}
-                    onChange={(e) => handlePrintInputChange('date', e.target.value)}
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">Page Number</label>
-                  <input
-                    type="text"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    value={printData.pageNumber}
-                    onChange={(e) => handlePrintInputChange('pageNumber', e.target.value)}
-                    placeholder="e.g., 72"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">Book Number</label>
-                  <input
-                    type="text"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    value={printData.bookNumber}
-                    onChange={(e) => handlePrintInputChange('bookNumber', e.target.value)}
-                    placeholder="e.g., 11"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">Certification Issued To</label>
-                  <input
-                    type="text"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    value={printData.issuedTo}
-                    onChange={(e) => handlePrintInputChange('issuedTo', e.target.value)}
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">Asst. Registration Officer</label>
-                  <input
-                    type="text"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    value={printData.asstRegistrationOfficer}
-                    onChange={(e) => handlePrintInputChange('asstRegistrationOfficer', e.target.value)}
-                    placeholder="e.g., VANISSA RATILLA GASTA"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">Verified By / Clerk III</label>
-                  <input
-                    type="text"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    value={printData.verifiedBy}
-                    onChange={(e) => handlePrintInputChange('verifiedBy', e.target.value)}
-                    placeholder="e.g., EMMA CULTURA SALON"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">O.R. Number</label>
-                  <input
-                    type="text"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    value={printData.orNumber}
-                    onChange={(e) => handlePrintInputChange('orNumber', e.target.value)}
-                    placeholder="e.g., 4987186"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">Amount Paid</label>
-                  <input
-                    type="text"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    value={printData.amountPaid}
-                    onChange={(e) => handlePrintInputChange('amountPaid', e.target.value)}
-                    placeholder="e.g., 105.00"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">Date Paid</label>
-                  <input
-                    type="date"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    value={printData.datePaid}
-                    onChange={(e) => handlePrintInputChange('datePaid', e.target.value)}
-                  />
-                </div>
+                <div><label className="block text-sm font-semibold text-gray-700 mb-1">Date of Issue</label><input type="date" className="w-full px-3 py-2 border border-gray-300 rounded-lg" value={printData.date} onChange={(e) => handlePrintInputChange('date', e.target.value)} /></div>
+                <div><label className="block text-sm font-semibold text-gray-700 mb-1">Page Number</label><input type="text" className="w-full px-3 py-2 border border-gray-300 rounded-lg" value={printData.pageNumber} onChange={(e) => handlePrintInputChange('pageNumber', e.target.value)} placeholder="e.g., 72" /></div>
+                <div><label className="block text-sm font-semibold text-gray-700 mb-1">Book Number</label><input type="text" className="w-full px-3 py-2 border border-gray-300 rounded-lg" value={printData.bookNumber} onChange={(e) => handlePrintInputChange('bookNumber', e.target.value)} placeholder="e.g., 11" /></div>
+                <div><label className="block text-sm font-semibold text-gray-700 mb-1">Certification Issued To</label><input type="text" className="w-full px-3 py-2 border border-gray-300 rounded-lg" value={printData.issuedTo} onChange={(e) => handlePrintInputChange('issuedTo', e.target.value)} /></div>
+                <div><label className="block text-sm font-semibold text-gray-700 mb-1">Asst. Registration Officer</label><input type="text" className="w-full px-3 py-2 border border-gray-300 rounded-lg" value={printData.asstRegistrationOfficer} onChange={(e) => handlePrintInputChange('asstRegistrationOfficer', e.target.value)} placeholder="e.g., VANISSA RATILLA GASTA" /></div>
+                <div><label className="block text-sm font-semibold text-gray-700 mb-1">Verified By / Clerk III</label><input type="text" className="w-full px-3 py-2 border border-gray-300 rounded-lg" value={printData.verifiedBy} onChange={(e) => handlePrintInputChange('verifiedBy', e.target.value)} placeholder="e.g., EMMA CULTURA SALON" /></div>
+                <div><label className="block text-sm font-semibold text-gray-700 mb-1">O.R. Number</label><input type="text" className="w-full px-3 py-2 border border-gray-300 rounded-lg" value={printData.orNumber} onChange={(e) => handlePrintInputChange('orNumber', e.target.value)} placeholder="e.g., 4987186" /></div>
+                <div><label className="block text-sm font-semibold text-gray-700 mb-1">Amount Paid</label><input type="text" className="w-full px-3 py-2 border border-gray-300 rounded-lg" value={printData.amountPaid} onChange={(e) => handlePrintInputChange('amountPaid', e.target.value)} placeholder="e.g., 105.00" /></div>
+                <div><label className="block text-sm font-semibold text-gray-700 mb-1">Date Paid</label><input type="date" className="w-full px-3 py-2 border border-gray-300 rounded-lg" value={printData.datePaid} onChange={(e) => handlePrintInputChange('datePaid', e.target.value)} /></div>
               </div>
 
-              {/* Certificate Preview */}
               <div className="border-t border-gray-200 pt-4">
                 <h3 className="text-lg font-semibold text-gray-800 mb-4">Preview</h3>
                 <div ref={printRef} className="relative bg-white border border-gray-300 shadow-lg" style={{ fontFamily: "'Times New Roman', 'Courier New', monospace", width: '100%' }}>
                   <div className="relative p-6 z-10">
-                    {/* UPPER SECTION */}
-                    <div className="text-center mb-4">
-                      <h1 className="text-xl font-bold uppercase tracking-wide">OFFICE OF THE MUNICIPAL CIVIL REGISTRAR</h1>
-                    </div>
-
-                    <div className="text-center mb-4">
-                      <h2 className="text-lg font-bold uppercase">BIRTH AVAILABLE</h2>
-                    </div>
-
-                    {/* Date */}
-                    <div className="flex justify-end mb-4">
-                      <div className="text-right">
-                        <p className="text-sm">
-                          {printData.date ? new Date(printData.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }).toUpperCase() : '___________'}
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* WE CERTIFY statement */}
-                    <div className="mb-4">
-                      <p className="text-sm">
-                        WE CERTIFY that, among others the following facts of Birth appear in our Register of Births on Page <strong>{printData.pageNumber || '___'}</strong> of book number <strong>{printData.bookNumber || '___'}</strong>:
-                      </p>
-                    </div>
-
-                    {/* Data fields */}
+                    <div className="text-center mb-4"><h1 className="text-xl font-bold uppercase tracking-wide">OFFICE OF THE MUNICIPAL CIVIL REGISTRAR</h1></div>
+                    <div className="text-center mb-4"><h2 className="text-lg font-bold uppercase">BIRTH AVAILABLE</h2></div>
+                    <div className="flex justify-end mb-4"><div className="text-right"><p className="text-sm">{printData.date ? new Date(printData.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }).toUpperCase() : '___________'}</p></div></div>
+                    <div className="mb-4"><p className="text-sm">WE CERTIFY that, among others the following facts of Birth appear in our Register of Births on Page <strong>{printData.pageNumber || '___'}</strong> of book number <strong>{printData.bookNumber || '___'}</strong>:</p></div>
+                    
                     <div className="space-y-1 text-sm mb-6">
                       <div className="flex"><span className="font-medium w-44">PRN</span><span>: {getPrintFieldValue(['prn'])}</span></div>
                       <div className="flex"><span className="font-medium w-44">LCR Registry Number</span><span>: {getPrintFieldValue(['lcr', 'registry'])}</span></div>
@@ -1462,34 +1330,11 @@ function App() {
                       <div className="flex"><span className="font-medium w-44">Place of Marriage of Parents</span><span>: {getPrintFieldValue(['place of marriage'])}</span></div>
                     </div>
 
-                    {/* THIS CERTIFICATION statement */}
-                    <div className="mb-4">
-                      <p className="text-sm">THIS CERTIFICATION is issued to <strong>{printData.issuedTo || '___________'}</strong> upon his/her request.</p>
-                    </div>
-
-                    {/* LOWER SECTION */}
-                    <div className="mb-4">
-                      <p className="font-bold text-sm">{printData.asstRegistrationOfficer || '____________________'}</p>
-                      <p className="text-xs">ASST. REGISTRATION OFFICER</p>
-                    </div>
-
-                    <div className="mb-4">
-                      <p className="text-sm mb-1">Verified by:</p>
-                      <p className="font-bold text-sm">{printData.verifiedBy || '____________________'}</p>
-                      <p className="text-xs">CLERK III</p>
-                    </div>
-
-                    {/* O.R. Information */}
-                    <div className="space-y-0.5 text-sm mb-4">
-                      <p><span className="font-semibold">O.R. Number:</span> {printData.orNumber || '___________'}</p>
-                      <p><span className="font-semibold">Amount Paid:</span> {printData.amountPaid ? printData.amountPaid : '___________'}</p>
-                      <p><span className="font-semibold">Date Paid:</span> {printData.datePaid ? new Date(printData.datePaid).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }).toUpperCase() : '___________'}</p>
-                    </div>
-
-                    {/* NOTE */}
-                    <div className="mt-4 text-xs text-gray-600 italic">
-                      <p>NOTE: This Certification is not valid if has mark of assurance or alteration of any entry</p>
-                    </div>
+                    <div className="mb-4"><p className="text-sm">THIS CERTIFICATION is issued to <strong>{printData.issuedTo || '___________'}</strong> upon his/her request.</p></div>
+                    <div className="mb-4"><p className="font-bold text-sm">{printData.asstRegistrationOfficer || '____________________'}</p><p className="text-xs">ASST. REGISTRATION OFFICER</p></div>
+                    <div className="mb-4"><p className="text-sm mb-1">Verified by:</p><p className="font-bold text-sm">{printData.verifiedBy || '____________________'}</p><p className="text-xs">CLERK III</p></div>
+                    <div className="space-y-0.5 text-sm mb-4"><p><span className="font-semibold">O.R. Number:</span> {printData.orNumber || '___________'}</p><p><span className="font-semibold">Amount Paid:</span> {printData.amountPaid ? printData.amountPaid : '___________'}</p><p><span className="font-semibold">Date Paid:</span> {printData.datePaid ? new Date(printData.datePaid).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }).toUpperCase() : '___________'}</p></div>
+                    <div className="mt-4 text-xs text-gray-600 italic"><p>NOTE: This Certification is not valid if has mark of assurance or alteration of any entry</p></div>
                   </div>
                 </div>
               </div>
@@ -1503,7 +1348,7 @@ function App() {
         </div>
       )}
 
-      {/* View Details Modal - Keep as is */}
+      {/* View Details Modal */}
       {isModalOpen && selectedRecord && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 animate-fade-in">
           <div className="bg-white rounded-2xl w-full max-w-3xl max-h-[90vh] overflow-hidden shadow-2xl animate-slide-up flex flex-col" onClick={(e) => e.stopPropagation()}>
@@ -1515,16 +1360,8 @@ function App() {
             </div>
             <div className="p-6 overflow-y-auto flex-1">
               <div className="flex items-center gap-4 mb-6 pb-4 border-b border-gray-200">
-                <div className="text-6xl">
-                  <svg className="w-16 h-16 text-blue-600" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-                  </svg>
-                </div>
-                <div>
-                  <h3 className="text-2xl font-bold text-gray-800">
-                    {selectedRecord.fullRecord.find((_, idx) => selectedRecord.headers?.[idx]?.toLowerCase().includes('name of child')) || "Unknown"}
-                  </h3>
-                </div>
+                <div className="text-6xl"><svg className="w-16 h-16 text-blue-600" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg></div>
+                <div><h3 className="text-2xl font-bold text-gray-800">{selectedRecord.fullRecord.find((_, idx) => selectedRecord.headers?.[idx]?.toLowerCase().includes('name of child')) || "Unknown"}</h3></div>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="col-span-2"><h4 className="text-lg font-semibold text-blue-600 mb-3">📋 Personal Details</h4></div>
@@ -1544,30 +1381,14 @@ function App() {
                     else if (hl.includes('mother')) icon = "👩";
                     else if (hl.includes('father')) icon = "👨";
                     else if (hl.includes('nationality')) icon = "🌍";
-                    return (
-                      <div className="bg-gray-50 rounded-lg p-3 hover:shadow-md transition group" key={index}>
-                        <div className="flex items-start gap-3">
-                          <div className="text-2xl">{icon}</div>
-                          <div className="flex-1">
-                            <div className="text-xs font-semibold text-blue-600 uppercase">{header}</div>
-                            <div className="text-gray-800 font-medium mt-1">{value}</div>
-                          </div>
-                        </div>
-                      </div>
-                    );
+                    return (<div className="bg-gray-50 rounded-lg p-3 hover:shadow-md transition group" key={index}><div className="flex items-start gap-3"><div className="text-2xl">{icon}</div><div className="flex-1"><div className="text-xs font-semibold text-blue-600 uppercase">{header}</div><div className="text-gray-800 font-medium mt-1">{value}</div></div></div></div>);
                   }
                   return null;
                 })}
               </div>
             </div>
             <div className="px-6 py-4 border-t border-gray-200 bg-gray-50 flex justify-end gap-3">
-              <button className="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition" onClick={() => {
-                closeModal();
-                const sheetName = isAllBooks ? selectedRecord.bookName : activeSheet?.name;
-                const rowIndex = displayRows.findIndex(r => r.childName === selectedRecord.childName);
-                const rowNumber = rowIndex !== -1 ? displayRows[rowIndex]?.rowNumber : null;
-                if (rowNumber && sheetName) openEditModal(selectedRecord, rowNumber);
-              }}>✏️ Edit Record</button>
+              <button className="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition" onClick={() => { closeModal(); const sheetName = isAllBooks ? selectedRecord.bookName : activeSheet?.name; const rowIndex = displayRows.findIndex(r => r.childName === selectedRecord.childName); const rowNumber = rowIndex !== -1 ? displayRows[rowIndex]?.rowNumber : null; if (rowNumber && sheetName) openEditModal(selectedRecord, rowNumber); }}>✏️ Edit Record</button>
               <button className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition" onClick={closeModal}>Close</button>
             </div>
           </div>
@@ -1585,29 +1406,8 @@ function App() {
               </div>
             </div>
             <div className="p-6 overflow-y-auto flex-1">
-              {isAllBooks && (
-                <div className="mb-6">
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">📚 Select Registry Book</label>
-                  <select className="w-full px-3 py-2 border border-gray-300 rounded-lg" value={selectedSheetForAdd} onChange={(e) => handleSheetSelectionChange(e.target.value)}>
-                    <option value="">-- Select a registry book --</option>
-                    {sheetNames.map(sheet => <option key={sheet} value={sheet}>{sheet}</option>)}
-                  </select>
-                </div>
-              )}
-              {((isAllBooks && selectedSheetForAdd) || (!isAllBooks && selectedSheetForAdd)) && (
-                <div>
-                  <div className="mb-4 p-3 bg-blue-50 rounded-lg"><p className="text-sm text-blue-700"><strong>Adding to:</strong> {selectedSheetForAdd}</p></div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {(isAllBooks ? addFormHeaders : activeSheet?.data?.[0] || []).map((header, idx) => {
-                      if (header && header.trim()) return (
-                        <div key={idx}><label className="block text-sm font-semibold text-gray-700 mb-2">{header}</label>
-                        {renderFormField(header, formData[header] || '', (field, value) => setFormData({ ...formData, [field]: value }))}</div>
-                      );
-                      return null;
-                    })}
-                  </div>
-                </div>
-              )}
+              {isAllBooks && (<div className="mb-6"><label className="block text-sm font-semibold text-gray-700 mb-2">📚 Select Registry Book</label><select className="w-full px-3 py-2 border border-gray-300 rounded-lg" value={selectedSheetForAdd} onChange={(e) => handleSheetSelectionChange(e.target.value)}><option value="">-- Select a registry book --</option>{sheetNames.map(sheet => <option key={sheet} value={sheet}>{sheet}</option>)}</select></div>)}
+              {((isAllBooks && selectedSheetForAdd) || (!isAllBooks && selectedSheetForAdd)) && (<div><div className="mb-4 p-3 bg-blue-50 rounded-lg"><p className="text-sm text-blue-700"><strong>Adding to:</strong> {selectedSheetForAdd}</p></div><div className="grid grid-cols-1 md:grid-cols-2 gap-4">{(isAllBooks ? addFormHeaders : activeSheet?.data?.[0] || []).map((header, idx) => { if (header && header.trim()) return (<div key={idx}><label className="block text-sm font-semibold text-gray-700 mb-2">{header}</label>{renderFormField(header, formData[header] || '', (field, value) => setFormData({ ...formData, [field]: value }))}</div>); return null; })}</div></div>)}
               {isAllBooks && !selectedSheetForAdd && <div className="text-center py-8 text-gray-500"><p>Please select a registry book above</p></div>}
             </div>
             <div className="px-6 py-4 border-t border-gray-200 bg-gray-50 flex justify-end gap-3">
@@ -1635,28 +1435,15 @@ function App() {
                   if (isAllBooks && header === 'Book Name') return null;
                   if (header && header.trim()) {
                     const value = editingRecord.fullRecord?.[header] || '';
-                    return (
-                      <div key={idx}><label className="block text-sm font-semibold text-gray-700 mb-2">{header}</label>
-                      {renderFormField(header, value, (field, val) => {
-                        const updatedFullRecord = { ...editingRecord.fullRecord };
-                        updatedFullRecord[field] = val;
-                        setEditingRecord({ ...editingRecord, fullRecord: updatedFullRecord });
-                      }, true)}</div>
-                    );
+                    return (<div key={idx}><label className="block text-sm font-semibold text-gray-700 mb-2">{header}</label>{renderFormField(header, value, (field, val) => { const updatedFullRecord = { ...editingRecord.fullRecord }; updatedFullRecord[field] = val; setEditingRecord({ ...editingRecord, fullRecord: updatedFullRecord }); }, true)}</div>);
                   }
                   return null;
                 })}
               </div>
             </div>
             <div className="px-6 py-4 border-t border-gray-200 bg-gray-50 flex justify-between gap-3">
-              <button className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition" onClick={() => {
-                const sheetName = isAllBooks ? editingRecord.bookName : activeSheet?.name;
-                if (confirm("Delete this record?")) handleDeleteRecord(sheetName, editingRowNumber);
-              }}>🗑️ Delete Record</button>
-              <div className="flex gap-3">
-                <button className="px-4 py-2 bg-gray-600 text-white rounded-lg" onClick={closeEditModal}>Cancel</button>
-                <button className="px-4 py-2 bg-yellow-500 text-white rounded-lg flex items-center gap-2" onClick={handleUpdateRecord}><span>💾</span> Update Record</button>
-              </div>
+              <button className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition" onClick={() => { const sheetName = isAllBooks ? editingRecord.bookName : activeSheet?.name; if (confirm("Delete this record?")) handleDeleteRecord(sheetName, editingRowNumber); }}>🗑️ Delete Record</button>
+              <div className="flex gap-3"><button className="px-4 py-2 bg-gray-600 text-white rounded-lg" onClick={closeEditModal}>Cancel</button><button className="px-4 py-2 bg-yellow-500 text-white rounded-lg flex items-center gap-2" onClick={handleUpdateRecord}><span>💾</span> Update Record</button></div>
             </div>
           </div>
         </div>
