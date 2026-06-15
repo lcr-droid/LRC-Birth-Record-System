@@ -50,7 +50,7 @@
   }
 }
 
-/* Print styles for certificate */
+/* Print styles */
 @media print {
   body * {
     visibility: hidden;
@@ -65,14 +65,18 @@
     width: 100%;
   }
   @page {
-    size: legal;
-    margin: 0.3in;
+    size: letter;
+    margin: 0.5in;
   }
 }
 
 /* Certificate background */
 .certificate-bg {
-  display: none;
+  background-image: url('/bg_image.png');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  opacity: 0.15;
 }
 
 /* Custom scrollbar */
@@ -127,8 +131,6 @@ table {
 
 th, td {
   border-bottom: 1px solid #e5e7eb;
-  padding: 12px 16px;
-  text-align: left;
 }
 
 /* Form input focus */
