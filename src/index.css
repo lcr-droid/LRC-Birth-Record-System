@@ -71,7 +71,7 @@
   min-height: 0; /* Important for Firefox */
 }
 
-/* Print styles - Clean official certificate */
+/* Print styles */
 @media print {
   body * {
     visibility: hidden;
@@ -84,20 +84,19 @@
     left: 0;
     top: 0;
     width: 100%;
-    padding: 0.4in;
   }
   @page {
-    size: A4;
-    margin: 0.4in;
+    size: letter;
+    margin: 0.5in;
   }
 }
 
-/* No background image - removed */
+/* No background image */
 .certificate-bg {
   display: none;
 }
 
-/* Custom scrollbar styles */
+/* Custom scrollbar */
 .custom-scrollbar::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -113,22 +112,14 @@
   border-radius: 10px;
 }
 
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.5);
-}
-
-/* Animation utilities */
+/* Animations */
 .animate-spin-slow {
   animation: spin 1s linear infinite;
 }
 
 @keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
 .animate-fade-in {
@@ -136,12 +127,8 @@
 }
 
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 .animate-slide-up {
@@ -149,14 +136,8 @@
 }
 
 @keyframes slideUp {
-  from {
-    transform: translateY(20px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
 }
 
 /* Table styles */
@@ -169,7 +150,7 @@ th, td {
   border-bottom: 1px solid #e5e7eb;
 }
 
-/* Form input focus styles */
+/* Form input focus */
 input:focus, select:focus, textarea:focus {
   outline: none;
 }
