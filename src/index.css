@@ -73,7 +73,7 @@
   }
   @page {
     size: legal;
-    margin: 0.5in;
+    margin: 0.3in;
   }
 }
 
@@ -81,13 +81,22 @@
 .certificate-bg {
   background-image: url('/bg_image.png');
   background-repeat: no-repeat;
-  background-position: center;
-  background-size: cover;
+  background-position: center bottom;
+  background-size: contain;
+  opacity: 0.05;
 }
 
 .certificate-print-page {
   box-shadow: none !important;
-  border: 1px solid #efefef;
+  border: none !important;
+  background-clip: padding-box;
+}
+
+/* Ensure images used as lines scale to page width when printing */
+.print-broken-line {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
 }
 
 /* Custom scrollbar */
