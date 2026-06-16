@@ -33,20 +33,9 @@ function App() {
     date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
     pageNumber: '',
     bookNumber: '',
-    prn: '',
-    lcrNumber: '',
-    registrationDate: '',
-    childName: '',
-    sex: '',
-    dateOfBirth: '',
-    placeOfBirth: '',
-    motherName: '',
-    fatherName: '',
-    marriageDate: '',
-    marriagePlace: '',
     issuedTo: '',
-    municipalCivilRegistrar: '',
     asstRegistrationOfficer: '',
+    municipalCivilRegistrar: '',
     orNumber: '',
     amountPaid: '',
     datePaid: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
@@ -162,23 +151,16 @@ function App() {
   };
 
   const openPrintModal = (record) => {
-    setPrintData({
-      ...printData,
-      pageNumber: record.page || '',
-      bookNumber: record.book || '',
-      prn: getFieldValueFromRecord(record, ['prn']),
-      lcrNumber: getFieldValueFromRecord(record, ['lcr', 'registry']),
-      registrationDate: getFieldValueFromRecord(record, ['date of registration']),
-      childName: getFieldValueFromRecord(record, ['name of child']),
-      sex: getFieldValueFromRecord(record, ['sex', 'gender']),
-      dateOfBirth: getFieldValueFromRecord(record, ['date of birth']),
-      placeOfBirth: getFieldValueFromRecord(record, ['place of birth']),
-      motherName: getFieldValueFromRecord(record, ['name of mother']),
-      fatherName: getFieldValueFromRecord(record, ['name of father']),
-      marriageDate: getFieldValueFromRecord(record, ['date of marriage']),
-      marriagePlace: getFieldValueFromRecord(record, ['place of marriage']),
-      issuedTo: getFieldValueFromRecord(record, ['name of child']) || "Unknown"
-    });
+    const childName = record.fullRecord.find((_, idx) =>
+      record.headers?.[idx]?.toLowerCase().includes('name of child')
+    ) || "Unknown";
+    const pageNumber = record.fullRecord.find((_, idx) =>
+      record.headers?.[idx]?.toLowerCase().includes('page')
+    ) || '';
+    const bookNumber = record.fullRecord.find((_, idx) =>
+      record.headers?.[idx]?.toLowerCase().includes('book')
+    ) || '';
+    setPrintData({ ...printData, issuedTo: childName, pageNumber: pageNumber, bookNumber: bookNumber });
     setSelectedRecord(record);
     setIsPrintModalOpen(true);
   };
@@ -190,15 +172,6 @@ function App() {
 
   const handlePrintInputChange = (field, value) => {
     setPrintData({ ...printData, [field]: value });
-  };
-
-  // Helper function to get field value from record
-  const getFieldValueFromRecord = (record, keywords) => {
-    if (!record || !record.fullRecord || !record.headers) return '';
-    const index = record.headers.findIndex(h =>
-      keywords.some(keyword => h?.toLowerCase().includes(keyword))
-    );
-    return index !== -1 ? record.fullRecord[index] : '';
   };
 
   const generatePDF = () => {
@@ -921,7 +894,7 @@ function App() {
         )}
       </main>
 
-      {/* Print Certificate Modal - EXACT match to DOCX layout */}
+      {/* Print Certificate Modal - EXACT match to second image */}
       {isPrintModalOpen && selectedRecord && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 animate-fade-in">
           <div className="bg-white rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden shadow-2xl animate-slide-up flex flex-col" onClick={(e) => e.stopPropagation()}>
@@ -959,7 +932,7 @@ function App() {
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                     value={printData.pageNumber}
                     onChange={(e) => handlePrintInputChange('pageNumber', e.target.value)}
-                    placeholder="e.g., 08"
+                    placeholder="e.g., 72"
                   />
                 </div>
                 <div>
@@ -969,114 +942,7 @@ function App() {
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                     value={printData.bookNumber}
                     onChange={(e) => handlePrintInputChange('bookNumber', e.target.value)}
-                    placeholder="e.g., 02"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">PRN</label>
-                  <input
-                    type="text"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    value={printData.prn}
-                    onChange={(e) => handlePrintInputChange('prn', e.target.value)}
-                    placeholder="e.g., None or 1234"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">LCR Registry Number</label>
-                  <input
-                    type="text"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    value={printData.lcrNumber}
-                    onChange={(e) => handlePrintInputChange('lcrNumber', e.target.value)}
-                    placeholder="e.g., 17"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">Date of Registration</label>
-                  <input
-                    type="text"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    value={printData.registrationDate}
-                    onChange={(e) => handlePrintInputChange('registrationDate', e.target.value)}
-                    placeholder="e.g., JANUARY 13, 1964"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">Name of Child</label>
-                  <input
-                    type="text"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    value={printData.childName}
-                    onChange={(e) => handlePrintInputChange('childName', e.target.value)}
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">Sex</label>
-                  <select
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    value={printData.sex || ''}
-                    onChange={(e) => handlePrintInputChange('sex', e.target.value)}
-                  >
-                    <option value="">Select Gender</option>
-                    <option value="MALE">MALE</option>
-                    <option value="FEMALE">FEMALE</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">Date of Birth</label>
-                  <input
-                    type="text"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    value={printData.dateOfBirth}
-                    onChange={(e) => handlePrintInputChange('dateOfBirth', e.target.value)}
-                    placeholder="e.g., DECEMBER 27, 1963"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">Place of Birth</label>
-                  <input
-                    type="text"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    value={printData.placeOfBirth}
-                    onChange={(e) => handlePrintInputChange('placeOfBirth', e.target.value)}
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">Name of Mother</label>
-                  <input
-                    type="text"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    value={printData.motherName}
-                    onChange={(e) => handlePrintInputChange('motherName', e.target.value)}
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">Name of Father</label>
-                  <input
-                    type="text"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    value={printData.fatherName}
-                    onChange={(e) => handlePrintInputChange('fatherName', e.target.value)}
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">Date of Marriage of Parents</label>
-                  <input
-                    type="text"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    value={printData.marriageDate}
-                    onChange={(e) => handlePrintInputChange('marriageDate', e.target.value)}
-                    placeholder="e.g., MARCH 11, 1961"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">Place of Marriage of Parents</label>
-                  <input
-                    type="text"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    value={printData.marriagePlace}
-                    onChange={(e) => handlePrintInputChange('marriagePlace', e.target.value)}
+                    placeholder="e.g., 11"
                   />
                 </div>
                 <div>
@@ -1086,16 +952,6 @@ function App() {
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                     value={printData.issuedTo}
                     onChange={(e) => handlePrintInputChange('issuedTo', e.target.value)}
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">Municipal Civil Registrar</label>
-                  <input
-                    type="text"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    value={printData.municipalCivilRegistrar}
-                    onChange={(e) => handlePrintInputChange('municipalCivilRegistrar', e.target.value)}
-                    placeholder="e.g., SHIRLEY FE S. RATILLA"
                   />
                 </div>
                 <div>
@@ -1109,13 +965,23 @@ function App() {
                   />
                 </div>
                 <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">Clerk III</label>
+                  <input
+                    type="text"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    value={printData.municipalCivilRegistrar}
+                    onChange={(e) => handlePrintInputChange('municipalCivilRegistrar', e.target.value)}
+                    placeholder="e.g., EMMA CULTURA SALON"
+                  />
+                </div>
+                <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-1">O.R. Number</label>
                   <input
                     type="text"
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                     value={printData.orNumber}
                     onChange={(e) => handlePrintInputChange('orNumber', e.target.value)}
-                    placeholder="e.g., 4975023"
+                    placeholder="e.g., 4987186"
                   />
                 </div>
                 <div>
@@ -1139,96 +1005,133 @@ function App() {
                 </div>
               </div>
 
-              {/* Certificate Preview - EXACT match to DOCX layout */}
+              {/* Certificate Preview - NO BORDER, LEGAL SIZE */}
               <div className="border-t border-gray-200 pt-4">
                 <h3 className="text-lg font-semibold text-gray-800 mb-4">Preview</h3>
-                <div ref={printRef} className="relative bg-white border border-gray-400 shadow-xl overflow-hidden" style={{ fontFamily: "'Times New Roman', Times, serif", width: '100%' }}>
+                <div ref={printRef} id="print-certificate" className="relative bg-white overflow-hidden certificate-print-page mx-auto" style={{ fontFamily: "'Times New Roman', serif", width: '8.5in', minHeight: '13in' }}>
                   {/* Background Image */}
-                  <div className="absolute inset-0 opacity-10 pointer-events-none">
-                    <img src="/bg_image.png" alt="Background" className="w-full h-full object-cover" onError={(e) => e.target.style.display = 'none'} />
-                  </div>
-                 
-                  <div className="relative py-8 px-8 z-10">
-                    {/* LCR Form No. 1A - LEFT ALIGNED */}
-                    <div className="mb-1">
-                      <div className="text-sm">LCR Form No. 1A</div>
-                      <div className="text-sm italic">(Birth -- Available)</div>
-                    </div>
+                  <div className="absolute inset-0 certificate-bg opacity-10 pointer-events-none"></div>
 
-                    {/* Office Header - CENTERED */}
-                    <div className="text-center my-4">
-                      <h1 className="text-xl font-bold uppercase tracking-wide">OFFICE OF THE MUNICIPAL CIVIL REGISTRAR</h1>
-                    </div>
-
-                    {/* Birth Available - CENTERED */}
-                    <div className="text-center mb-5">
-                      <h2 className="text-lg font-bold uppercase">BIRTH AVAILABLE</h2>
-                    </div>
-
-                    {/* Date Section - RIGHT ALIGNED with Date label below */}
-                    <div className="flex justify-end mb-5">
+                  {/* Content - TIGHTER MARGINS */}
+                  <div className="relative p-10 text-black">
+                    <div className="flex justify-between items-start mb-6">
+                      <div>
+                        <p className="text-sm font-semibold uppercase tracking-[0.2em]">LCR Form No. 1A</p>
+                        <p className="text-xs italic mt-1">(Birth – Available)</p>
+                      </div>
                       <div className="text-right">
-                        <div className="text-sm underline font-bold">{printData.date ? new Date(printData.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }).toUpperCase() : '___________'}</div>
-                        <div className="text-xs">Date</div>
+                        <p className="text-sm font-semibold uppercase">Date</p>
+                        <p className="text-base uppercase">{printData.date ? new Date(printData.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }).toUpperCase() : '___________'}</p>
                       </div>
                     </div>
 
-                    {/* WE CERTIFY Statement */}
-                    <div className="mb-5">
-                      <p className="text-sm">
-                        WE CERTIFY that, among others the following facts of Birth appear in our Register of Births on Page <u><strong>{printData.pageNumber || '___'}</strong></u> of book number <u><strong>{printData.bookNumber || '___'}</strong></u>:
-                      </p>
+                    <div className="text-center mb-6">
+                      <p className="text-lg font-bold uppercase tracking-[0.3em]">Office of the Municipal Civil Registrar</p>
+                      <p className="text-2xl font-bold uppercase mt-3">Birth Available</p>
                     </div>
 
-                    {/* Data Fields - ALL BOLD with underlined values */}
-                    <div className="space-y-1 text-sm mb-6 font-bold">
-                      <div className="flex"><span className="w-48">PRN</span><span className="w-4">:</span><span className="flex-1 ml-2 underline">{printData.prn || '___________'}</span></div>
-                      <div className="flex"><span className="w-48">LCR Registry Number</span><span className="w-4">:</span><span className="flex-1 ml-2 underline">{printData.lcrNumber || getFieldValueFromRecord(selectedRecord, ['lcr', 'registry']) || '___________'}</span></div>
-                      <div className="flex"><span className="w-48">Date of Registration</span><span className="w-4">:</span><span className="flex-1 ml-2 underline">{printData.registrationDate || getFieldValueFromRecord(selectedRecord, ['date of registration']) || '___________'}</span></div>
-                      <div className="flex"><span className="w-48">Name of Child</span><span className="w-4">:</span><span className="flex-1 ml-2 underline">{printData.childName || getFieldValueFromRecord(selectedRecord, ['name of child']) || '___________'}</span></div>
-                      <div className="flex"><span className="w-48">Sex</span><span className="w-4">:</span><span className="flex-1 ml-2 underline">{printData.sex || getFieldValueFromRecord(selectedRecord, ['sex', 'gender']) || '___________'}</span></div>
-                      <div className="flex"><span className="w-48">Date of Birth</span><span className="w-4">:</span><span className="flex-1 ml-2 underline">{printData.dateOfBirth || getFieldValueFromRecord(selectedRecord, ['date of birth']) || '___________'}</span></div>
-                      <div className="flex"><span className="w-48">Place of Birth</span><span className="w-4">:</span><span className="flex-1 ml-2 underline">{printData.placeOfBirth || getFieldValueFromRecord(selectedRecord, ['place of birth']) || '___________'}</span></div>
-                      <div className="flex"><span className="w-48">Name of Mother</span><span className="w-4">:</span><span className="flex-1 ml-2 underline">{printData.motherName || getFieldValueFromRecord(selectedRecord, ['name of mother']) || '___________'}</span></div>
-                      <div className="flex"><span className="w-48">Nationality</span><span className="w-4">:</span><span className="flex-1 ml-2 underline">FILIPINO</span></div>
-                      <div className="flex"><span className="w-48">Name of Father</span><span className="w-4">:</span><span className="flex-1 ml-2 underline">{printData.fatherName || getFieldValueFromRecord(selectedRecord, ['name of father']) || '___________'}</span></div>
-                      <div className="flex"><span className="w-48">Nationality</span><span className="w-4">:</span><span className="flex-1 ml-2 underline">FILIPINO</span></div>
-                      <div className="flex"><span className="w-48">Date of Marriage of Parents</span><span className="w-4">:</span><span className="flex-1 ml-2 underline">{printData.marriageDate || getFieldValueFromRecord(selectedRecord, ['date of marriage']) || '___________'}</span></div>
-                      <div className="flex"><span className="w-48">Place of Marriage of Parents</span><span className="w-4">:</span><span className="flex-1 ml-2 underline">{printData.marriagePlace || getFieldValueFromRecord(selectedRecord, ['place of marriage']) || '___________'}</span></div>
+                    <div className="border-t border-black/80 mb-6"></div>
+
+                    <div className="mb-5 text-sm leading-7">
+                      <p className="font-semibold uppercase">WE CERTIFY</p>
+                      <p className="mt-1">that, among others, the following facts of birth appear in our Register of Births on Page <strong>{printData.pageNumber || '___'}</strong> of book number <strong>{printData.bookNumber || '___'}</strong>:</p>
                     </div>
 
-                    {/* THIS CERTIFICATION Statement */}
-                    <div className="mb-6">
-                      <p className="text-sm">
-                        THIS CERTIFICATION is issued to <strong><u>{printData.issuedTo || getFieldValueFromRecord(selectedRecord, ['name of child']) || '___________'}</u></strong> upon his/her request.
-                      </p>
+                    <div className="grid gap-2 text-sm">
+                      <div className="flex">
+                        <span className="w-56 font-semibold">PRN</span>
+                        <span className="w-4">:</span>
+                        <span className="ml-2">{getFieldValue(selectedRecord, ['prn']) || '___________'}</span>
+                      </div>
+                      <div className="flex">
+                        <span className="w-56 font-semibold">LCR Registry Number</span>
+                        <span className="w-4">:</span>
+                        <span className="ml-2">{getFieldValue(selectedRecord, ['lcr', 'registry']) || '___________'}</span>
+                      </div>
+                      <div className="flex">
+                        <span className="w-56 font-semibold">Date of Registration</span>
+                        <span className="w-4">:</span>
+                        <span className="ml-2">{getFieldValue(selectedRecord, ['date of registration']) || '___________'}</span>
+                      </div>
+                      <div className="flex">
+                        <span className="w-56 font-semibold">Name of Child</span>
+                        <span className="w-4">:</span>
+                        <span className="ml-2">{getFieldValue(selectedRecord, ['name of child']) || '___________'}</span>
+                      </div>
+                      <div className="flex">
+                        <span className="w-56 font-semibold">Sex</span>
+                        <span className="w-4">:</span>
+                        <span className="ml-2">{getFieldValue(selectedRecord, ['sex', 'gender']) || '___________'}</span>
+                      </div>
+                      <div className="flex">
+                        <span className="w-56 font-semibold">Date of Birth</span>
+                        <span className="w-4">:</span>
+                        <span className="ml-2">{getFieldValue(selectedRecord, ['date of birth']) || '___________'}</span>
+                      </div>
+                      <div className="flex">
+                        <span className="w-56 font-semibold">Place of Birth</span>
+                        <span className="w-4">:</span>
+                        <span className="ml-2">{getFieldValue(selectedRecord, ['place of birth']) || '___________'}</span>
+                      </div>
+                      <div className="flex">
+                        <span className="w-56 font-semibold">Name of Mother</span>
+                        <span className="w-4">:</span>
+                        <span className="ml-2">{getFieldValue(selectedRecord, ['name of mother']) || '___________'}</span>
+                      </div>
+                      <div className="flex">
+                        <span className="w-56 font-semibold">Nationality</span>
+                        <span className="w-4">:</span>
+                        <span className="ml-2">FILIPINO</span>
+                      </div>
+                      <div className="flex">
+                        <span className="w-56 font-semibold">Name of Father</span>
+                        <span className="w-4">:</span>
+                        <span className="ml-2">{getFieldValue(selectedRecord, ['name of father']) || '___________'}</span>
+                      </div>
+                      <div className="flex">
+                        <span className="w-56 font-semibold">Nationality</span>
+                        <span className="w-4">:</span>
+                        <span className="ml-2">FILIPINO</span>
+                      </div>
+                      <div className="flex">
+                        <span className="w-56 font-semibold">Date of Marriage of Parents</span>
+                        <span className="w-4">:</span>
+                        <span className="ml-2">{getFieldValue(selectedRecord, ['date of marriage']) || '___________'}</span>
+                      </div>
+                      <div className="flex">
+                        <span className="w-56 font-semibold">Place of Marriage of Parents</span>
+                        <span className="w-4">:</span>
+                        <span className="ml-2">{getFieldValue(selectedRecord, ['place of marriage']) || '___________'}</span>
+                      </div>
                     </div>
 
-                    {/* Municipal Civil Registrar Section */}
-                    <div className="mb-4">
-                      <div className="font-bold text-sm underline">{printData.municipalCivilRegistrar || '____________________'}</div>
-                      <div className="text-xs font-bold">MUNICIPAL CIVIL REGISTRAR</div>
+                    <div className="mt-6 text-sm">
+                      <p>This certification is issued to <strong>{printData.issuedTo || '___________'}</strong> upon his/her request.</p>
                     </div>
 
-                    {/* Verified by label */}
-                    <div className="text-left text-sm font-bold mb-2">Verified by:</div>
-
-                    {/* Asst Registration Officer Section */}
-                    <div className="mb-6">
-                      <div className="font-bold text-sm underline">{printData.asstRegistrationOfficer || '____________________'}</div>
-                      <div className="text-xs font-bold">ASST. REGISTRATION OFFICER</div>
+                    <div className="mt-10 grid gap-8 md:grid-cols-2">
+                      <div>
+                        <p className="text-sm font-semibold uppercase mb-2">Verified by</p>
+                        <div className="h-16 border-b border-black mb-3"></div>
+                        <p className="font-bold uppercase">{printData.municipalCivilRegistrar || '____________________'}</p>
+                        <p className="text-sm font-semibold">CLERK III</p>
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold uppercase mb-2">Asst. Registration Officer</p>
+                        <div className="h-16 border-b border-black mb-3"></div>
+                        <p className="font-bold uppercase">{printData.asstRegistrationOfficer || '____________________'}</p>
+                        <p className="text-sm font-semibold">ASST. REGISTRATION OFFICER</p>
+                      </div>
                     </div>
 
-                    {/* O.R. Information */}
-                    <div className="space-y-0.5 text-sm mb-4 font-bold">
-                      <p><span className="font-bold">O.R Number:</span> <span>{printData.orNumber || '___________'}</span></p>
-                      <p><span className="font-bold">Amount Paid:</span> <span>{printData.amountPaid || '___________'}</span></p>
-                      <p><span className="font-bold">Date Paid :</span> <span className="underline">{printData.datePaid ? new Date(printData.datePaid).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }).toUpperCase() : '___________'}</span></p>
+                    <div className="mt-8 text-sm space-y-1">
+                      <p><span className="font-semibold">O.R. Number:</span> {printData.orNumber || '___________'}</p>
+                      <p><span className="font-semibold">Amount Paid:</span> {printData.amountPaid || '___________'}</p>
+                      <p><span className="font-semibold">Date Paid:</span> {printData.datePaid ? new Date(printData.datePaid).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }).toUpperCase() : '___________'}</p>
                     </div>
 
-                    {/* NOTE */}
-                    <div className="mt-3 text-xs italic">
-                      <p>NOTE: This Certification is not valid if has mark of erasure or alteration of any entry</p>
+                    <div className="mt-10 text-xs italic">
+                      <p>NOTE: This certification is not valid if the mark of issuance or allotment of any entry is altered.</p>
                     </div>
                   </div>
                 </div>
@@ -1236,8 +1139,18 @@ function App() {
             </div>
            
             <div className="px-6 py-4 border-t border-gray-200 bg-gray-50 flex justify-end gap-3 flex-shrink-0">
-              <button className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition" onClick={closePrintModal}>Cancel</button>
-              <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition flex items-center gap-2" onClick={generatePDF}><span>📄</span> Generate PDF</button>
+              <button
+                className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition"
+                onClick={closePrintModal}
+              >
+                Cancel
+              </button>
+              <button
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition flex items-center gap-2"
+                onClick={generatePDF}
+              >
+                <span>📄</span> Generate PDF
+              </button>
             </div>
           </div>
         </div>
