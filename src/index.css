@@ -52,10 +52,6 @@
 
 /* Print styles */
 @media print {
-  body {
-    background: white !important;
-    color: black !important;
-  }
   body * {
     visibility: hidden;
   }
@@ -67,12 +63,9 @@
     left: 0;
     top: 0;
     width: 100%;
-    margin: 0;
-    padding: 0;
-    background: white;
   }
   @page {
-    size: legal;
+    size: letter;
     margin: 0.5in;
   }
 }
@@ -83,11 +76,7 @@
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
-}
-
-.certificate-print-page {
-  box-shadow: none !important;
-  border: 1px solid #efefef;
+  opacity: 0.15;
 }
 
 /* Custom scrollbar */
