@@ -27,6 +27,11 @@ class LCRAPI {
     
     try {
       const response = await fetch(url, options);
+      if (!response.ok) {
+        const text = await response.text();
+        const message = `HTTP ${response.status}: ${text.substring(0, 200)}`;
+        throw new Error(message);
+      }
       const result = await response.json();
       return result;
     } catch (error) {
@@ -36,11 +41,11 @@ class LCRAPI {
   }
 
   async getAllSheets() {
-    return this.request('/all', 'GET');
+    return this.request('/?all=true', 'GET');
   }
 
   async getSheetData(sheetName) {
-    return this.request(`/data?sheetName=${encodeURIComponent(sheetName)}`, 'GET');
+    return this.request(`/?sheetName=${encodeURIComponent(sheetName)}`, 'GET');
   }
 
   async addRecord(sheetName, record) {
