@@ -99,6 +99,91 @@
   object-fit: contain;
 }
 
+/* User-provided certificate styles adapted for app print layout */
+.certificate {
+  width: 8.5in;
+  max-width: 100%;
+  background: white;
+  position: relative;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.18);
+  margin: 0 auto;
+  border: 1px solid #555;
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
+.certificate-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.certificate-bg img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.certificate-content {
+  position: relative;
+  z-index: 1;
+  padding: 0.75in 0.85in;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.form-number { margin-bottom: 0.25rem; margin-top: 0.25rem; }
+.form-number p { font-size: 13px; letter-spacing: 0.5px; }
+.form-number .bold { font-weight: bold; }
+.form-number .italic { font-style: italic; }
+
+.office-header { text-align: center; margin-bottom: 0.5rem; }
+.office-header h1 { font-size: 20px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; line-height: 1.2; }
+
+.dotted-line { width: 100%; margin: 0.5rem 0 0.85rem; }
+
+.birth-available { text-align: center; margin-bottom: 0.75rem; }
+.birth-available h2 { font-size: 18px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
+
+.date-section { display: flex; justify-content: flex-end; margin-bottom: 0.75rem; }
+.date-box { text-align: right; }
+.date-box .date { font-size: 14px; font-weight: bold; letter-spacing: 0.5px; }
+.date-box .date-label { font-size: 10px; letter-spacing: 0.4px; }
+
+.certify-statement p, .certification-statement p, .or-info p, .note p { font-size: 13px; line-height: 1.4; }
+
+.data-fields { display: grid; grid-template-columns: 1fr; gap: 0.35rem; margin-bottom: 1rem; }
+.field-row { display: flex; flex-wrap: wrap; gap: 0.5rem; font-size: 13px; align-items: baseline; }
+.field-label { min-width: 230px; max-width: 240px; font-weight: bold; }
+.field-colon { width: 12px; }
+.field-value { flex: 1; min-width: 180px; margin-left: 0; }
+
+.signature-section { display: flex; justify-content: space-between; align-items: flex-start; gap: 1.5rem; margin-bottom: 1.2rem; flex-wrap: wrap; }
+.verified-by, .asst-officer { width: min(48%, 320px); display:flex; flex-direction: column; gap: 0.2rem; }
+.verified-by { text-align: left; align-items: flex-start; }
+.asst-officer { text-align: right; align-items: flex-end; }
+.verified-by .label, .asst-officer .label { font-size: 12px; font-weight: bold; }
+.verified-by .name, .asst-officer .name { font-size: 14px; font-weight: bold; }
+.verified-by .title, .asst-officer .title { font-size: 11px; letter-spacing: 0.5px; }
+
+.or-info { margin-bottom: 1rem; display: grid; gap: 0.2rem; }
+.or-info .bold { font-weight: bold; }
+
+.note { margin-top: 0.75rem; }
+.note p { font-size: 15px; font-style: italic; font-weight: bold; }
+
+@media print {
+  .certificate { box-shadow: none; margin: 0; width: 100%; border: none; }
+  .certificate-content { padding: 0.4in 0.6in; }
+  @page { size: legal; margin: 0.3in; }
+}
+
 /* Custom scrollbar */
 .custom-scrollbar::-webkit-scrollbar {
   width: 6px;
