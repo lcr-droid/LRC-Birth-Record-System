@@ -58,8 +58,40 @@ function isCacheValid() {
   return cache.timestamp && (Date.now() - cache.timestamp) < CACHE_DURATION;
 }
 
-async function getAllSheetsHandler(req, res) {
+// GET /api/sheets - Get all sheet names (cached)
+app.get('/api/sheets', async (req, res) => {
   try {
+    // Check cache first
+    if (isCacheValid() && cache.allSheets) {
+      console.log('Returning cached sheet names');
+      return res.json({ success: true, sheets: cache.allSheets.sheetNames });
+    }
+    
+    const auth = await getAuthClient();
+    const sheets = google.sheets({ version: 'v4', auth });
+    
+    const metadata = await sheets.spreadsheets.get({
+      spreadsheetId: SPREADSHEET_ID,
+    });
+    
+    const sheetNames = (metadata.data.sheets || []).map(s => cleanSheetName(s.properties.title));
+    
+    // Update cache
+    if (!cache.allSheets) cache.allSheets = {};
+    cache.allSheets.sheetNames = sheetNames;
+    cache.timestamp = Date.now();
+    
+    res.json({ success: true, sheets: sheetNames });
+  } catch (error) {
+    console.error('Error getting sheet names:', error.message);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// GET /api/sheets/all - Get all sheets with data (cached)
+app.get('/api/sheets/all', async (req, res) => {
+  try {
+    // Check cache first
     if (isCacheValid() && cache.allSheets && cache.allSheets.data) {
       console.log('Returning cached all sheets data');
       return res.json({
@@ -69,38 +101,35 @@ async function getAllSheetsHandler(req, res) {
         fromCache: true
       });
     }
-
-    if (cache.allSheets && cache.allSheets.data) {
-      console.log('Using stale cache while refreshing all sheets');
-    }
-
+    
     const auth = await getAuthClient();
     const sheets = google.sheets({ version: 'v4', auth });
-
+    
     const metadata = await sheets.spreadsheets.get({
       spreadsheetId: SPREADSHEET_ID,
     });
-
+    
     const sheetsList = metadata.data.sheets || [];
     const result = {};
-
+    
+    // Process sheets one by one with delays to avoid quota issues
     for (let i = 0; i < sheetsList.length; i++) {
       const sheet = sheetsList[i];
       const rawSheetName = sheet.properties.title;
       const sheetName = cleanSheetName(rawSheetName);
-
+      
       console.log(`Fetching data from: ${sheetName} (${i + 1}/${sheetsList.length})`);
-
+      
       try {
         const response = await sheets.spreadsheets.values.get({
           spreadsheetId: SPREADSHEET_ID,
           range: `'${sheetName}'!A1:Z1000`,
         });
-
+        
         const data = response.data.values || [];
         const headers = data[0] || [];
         const rows = data.slice(1);
-
+        
         result[sheetName] = {
           headers: headers,
           data: rows,
@@ -115,85 +144,31 @@ async function getAllSheetsHandler(req, res) {
           error: sheetError.message
         };
       }
-
+      
+      // Add delay between requests to avoid quota issues
       if (i < sheetsList.length - 1) {
         await new Promise(resolve => setTimeout(resolve, 500));
       }
     }
-
+    
+    // Update cache
     cache.allSheets = {
       data: result,
       totalSheets: sheetsList.length,
       sheetNames: Object.keys(result)
     };
     cache.timestamp = Date.now();
-
-    return res.json({
+    
+    res.json({
       success: true,
       sheets: result,
       totalSheets: sheetsList.length,
     });
   } catch (error) {
     console.error('Error getting all sheets:', error.message);
-    if (cache.allSheets && cache.allSheets.data) {
-      return res.json({
-        success: true,
-        sheets: cache.allSheets.data,
-        totalSheets: cache.allSheets.totalSheets,
-        fromCache: true,
-        warning: 'Using stale cache due to Google Sheets API quota limits.'
-      });
-    }
-    return res.status(500).json({ success: false, error: error.message });
-  }
-}
-
-// GET /api/sheets - Get all sheet names (cached)
-app.get('/api/sheets', async (req, res) => {
-  if (req.query.all === 'true') {
-    return getAllSheetsHandler(req, res);
-  }
-
-  try {
-    if (isCacheValid() && cache.allSheets) {
-      console.log('Returning cached sheet names');
-      return res.json({ success: true, sheets: cache.allSheets.sheetNames });
-    }
-
-    if (cache.allSheets && cache.allSheets.sheetNames) {
-      console.log('Using stale sheet name cache while refreshing');
-    }
-
-    const auth = await getAuthClient();
-    const sheets = google.sheets({ version: 'v4', auth });
-
-    const metadata = await sheets.spreadsheets.get({
-      spreadsheetId: SPREADSHEET_ID,
-    });
-
-    const sheetNames = (metadata.data.sheets || []).map(s => cleanSheetName(s.properties.title));
-
-    if (!cache.allSheets) cache.allSheets = {};
-    cache.allSheets.sheetNames = sheetNames;
-    cache.timestamp = Date.now();
-
-    res.json({ success: true, sheets: sheetNames });
-  } catch (error) {
-    console.error('Error getting sheet names:', error.message);
-    if (cache.allSheets && cache.allSheets.sheetNames) {
-      return res.json({
-        success: true,
-        sheets: cache.allSheets.sheetNames,
-        fromCache: true,
-        warning: 'Using stale sheet names due to Google Sheets API quota limits.'
-      });
-    }
     res.status(500).json({ success: false, error: error.message });
   }
 });
-
-// GET /api/sheets/all - Get all sheets with data (cached)
-app.get('/api/sheets/all', getAllSheetsHandler);
 
 // GET /api/sheets/data - Get specific sheet data (cached per sheet)
 app.get('/api/sheets/data', async (req, res) => {
