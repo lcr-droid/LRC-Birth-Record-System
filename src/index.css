@@ -118,7 +118,7 @@
 .certificate-content {
   position: relative;
   z-index: 1;
-  padding: 1.6in 0.9in 0.6in; /* increased top and symmetric left/right padding */
+  padding: 1.7in 0.9in 0.6in; /* increased top and symmetric left/right padding */
   display: flex;
   flex-direction: column;
   gap: 0.6rem;
