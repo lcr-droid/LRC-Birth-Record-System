@@ -150,20 +150,32 @@
 .office-header {
   text-align: center;
   margin-bottom: 0.3rem;
+  white-space: nowrap;
 }
 
 .office-header h1 {
   font-size: 20px;
   font-weight: bold;
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 0.5px;
   line-height: 1.2;
+}
+
+.underline-text {
+  text-decoration: underline;
 }
 
 /* Dotted Line */
 .dotted-line {
   width: 100%;
   margin: 0.3rem 0 0.5rem;
+}
+
+.print-broken-line {
+  width: 80%;
+  height: 0;
+  border-top: 2px dotted #000;
+  margin: 0.5rem auto 0.75rem auto;
 }
 
 /* Birth Available */
@@ -253,57 +265,50 @@
 /* Signature Section */
 .signature-section {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
   gap: 1rem;
   margin-bottom: 0.8rem;
-  flex-wrap: wrap;
   width: 100%;
 }
 
-.verified-by,
-.asst-officer {
-  flex: 1 1 48%;
-  max-width: 48%;
+.signature-section .verified-label {
+  flex: 0 0 auto;
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+  align-self: flex-start;
+  padding-top: 0.3rem;
+}
+
+.signature-section .verified-entries {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.signature-section .entry {
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
 }
 
-.verified-by {
-  text-align: left;
-  align-items: flex-start;
-}
-
-.asst-officer {
-  text-align: left;
-  align-items: flex-start;
-}
-
-.verified-by .label,
-.asst-officer .label {
-  font-size: 12px;
-  font-weight: bold;
-}
-
-.verified-by .name,
-.asst-officer .name {
+.signature-section .name {
   width: 100%;
   font-size: 14px;
   font-weight: bold;
   text-decoration: underline;
+  text-transform: uppercase;
 }
 
-.verified-by .title {
+.signature-section .title {
   font-size: 11px;
   letter-spacing: 0.5px;
   text-align: left;
+  text-transform: uppercase;
 }
 
-.asst-officer .title {
-  font-size: 11px;
-  letter-spacing: 0.5px;
-  text-align: left;
+.signature-section .entry + .entry {
+  margin-top: 0.75rem;
 }
 
 /* OR Information */
