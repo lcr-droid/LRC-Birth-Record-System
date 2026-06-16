@@ -1029,7 +1029,7 @@ function App() {
                       <p className="text-2xl font-bold uppercase">Birth Available</p>
                     </div>
 
-                    <img src="/broken_lines.png" alt="divider" className="print-broken-line" />
+                    <div className="print-broken-line" aria-hidden="true"></div>
 
                     <div className="date-section">
                       <div className="date-box">
@@ -1062,11 +1062,15 @@ function App() {
 
                     <div className="signature-section mt-6">
                       <div className="verified-by">
-                        <div className="name" style={{ textDecoration: 'underline' }}>{printData.municipalCivilRegistrar || '____________________'}</div>
+                        <div className="signature-label">Verified by:</div>
+                        <div className="signature-line" />
+                        <div className="name">{printData.municipalCivilRegistrar || '____________________'}</div>
                         <div className="title">CLERK III</div>
                       </div>
                       <div className="asst-officer">
-                        <div className="name" style={{ textDecoration: 'underline' }}>{printData.asstRegistrationOfficer || '____________________'}</div>
+                        <div className="signature-label">Asst. Registration Officer</div>
+                        <div className="signature-line" />
+                        <div className="name">{printData.asstRegistrationOfficer || '____________________'}</div>
                         <div className="title">ASST. REGISTRATION OFFICER</div>
                       </div>
                     </div>
