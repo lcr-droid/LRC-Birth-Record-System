@@ -264,40 +264,61 @@
 
 /* Signature Section */
 .signature-section {
-  display: grid;
-  grid-template-columns: auto minmax(240px, 1fr) auto;
-  gap: 0.5rem 1rem;
-  align-items: start;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
   margin-bottom: 0.8rem;
   width: 100%;
 }
 
-.signature-section .verified-label {
-  grid-row: 1 / span 2;
+.signature-first-person {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  text-align: right;
+  margin-left: auto;
+  width: fit-content;
+}
+
+.signature-verified-section {
+  display: flex;
+  gap: 1.5rem;
+  align-items: flex-start;
+}
+
+.signature-verified-section .verified-label {
+  flex: 0 0 auto;
   font-size: 12px;
   font-weight: bold;
   text-transform: uppercase;
-  align-self: start;
-  padding-top: 0.3rem;
+  align-self: flex-start;
+  padding-top: 0.1rem;
+  min-width: fit-content;
 }
 
-.signature-section .signature-name {
+.signature-second-person {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.signature-first-person .sig-name,
+.signature-second-person .sig-name {
   font-size: 14px;
   font-weight: bold;
   text-decoration: underline;
   text-transform: uppercase;
 }
 
-.signature-section .signature-title {
+.signature-first-person .sig-title,
+.signature-second-person .sig-title {
   font-size: 11px;
   letter-spacing: 0.5px;
-  text-align: right;
   text-transform: uppercase;
-  justify-self: end;
 }
 
-.signature-section .signature-empty {
-  display: block;
+.signature-first-person .sig-title {
+  text-align: right;
 }
 
 /* OR Information */
