@@ -1062,15 +1062,11 @@ function App() {
 
                     <div className="signature-section mt-6">
                       <div className="verified-by">
-                        <div className="signature-label">Verified by:</div>
-                        <div className="signature-line" />
-                        <div className="name">{printData.municipalCivilRegistrar || '____________________'}</div>
+                        <div className="name" style={{ textDecoration: 'underline' }}>{printData.municipalCivilRegistrar || '____________________'}</div>
                         <div className="title">CLERK III</div>
                       </div>
                       <div className="asst-officer">
-                        <div className="signature-label">Asst. Registration Officer</div>
-                        <div className="signature-line" />
-                        <div className="name">{printData.asstRegistrationOfficer || '____________________'}</div>
+                        <div className="name" style={{ textDecoration: 'underline' }}>{printData.asstRegistrationOfficer || '____________________'}</div>
                         <div className="title">ASST. REGISTRATION OFFICER</div>
                       </div>
                     </div>
