@@ -126,19 +126,18 @@
   top: 0;
   left: 0;
   display: block;
-  opacity: 0.03; /* very light watermark */
 }
 
 .certificate-content {
   position: relative;
   z-index: 1;
-  padding: 1.2in 0.85in 0.6in; /* extra top padding to avoid header/date clipping */
+  padding: 1.4in 0.9in 0.6in; /* increased top and symmetric left/right padding */
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
 }
 
-.form-number { margin-bottom: 0.25rem; margin-top: 0.25rem; }
+.form-number { margin-bottom: 0.25rem; margin-top: 0.25rem; padding-top: 0.35in; }
 .form-number p { font-size: 13px; letter-spacing: 0.5px; }
 .form-number .bold { font-weight: bold; }
 .form-number .italic { font-style: italic; }
@@ -160,7 +159,7 @@
 
 .data-fields { display: grid; grid-template-columns: 1fr; gap: 0.35rem; margin-bottom: 1rem; }
 .field-row { display: flex; flex-wrap: wrap; gap: 0.5rem; font-size: 13px; align-items: baseline; }
-.field-label { min-width: 230px; max-width: 240px; font-weight: bold; }
+.field-label { min-width: 200px; max-width: 220px; font-weight: bold; }
 .field-colon { width: 12px; }
 .field-value { flex: 1; min-width: 180px; margin-left: 0; }
 
