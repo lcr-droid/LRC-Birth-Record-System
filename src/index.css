@@ -78,12 +78,13 @@
 }
 
 /* Certificate Container - Legal Size */
+/* Certificate Container - Legal Size with less margin */
 .certificate {
   width: 8.5in;
   max-width: 100%;
   background: white;
   position: relative;
-  margin: 0 auto;
+  margin: 0;
   display: block;
   box-sizing: border-box;
   page-break-inside: avoid;
