@@ -1029,7 +1029,7 @@ function App() {
                       <p className="text-2xl font-bold uppercase">Birth Available</p>
                     </div>
 
-                    <img src="/broken_line.png" alt="divider" className="print-broken-line" />
+                    <img src="/broken_lines.png" alt="divider" className="print-broken-line" />
 
                     <div className="date-section">
                       <div className="date-box">
