@@ -34,6 +34,7 @@ function App() {
     pageNumber: '',
     bookNumber: '',
     issuedTo: '',
+    prn: '',
     verifiedName: '',
     verifiedTitle: '',
     assistantName: '',
@@ -959,6 +960,16 @@ function App() {
                   />
                 </div>
                 <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">PRN</label>
+                  <input
+                    type="text"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    value={printData.prn}
+                    onChange={(e) => handlePrintInputChange('prn', e.target.value)}
+                    placeholder="e.g., 12345"
+                  />
+                </div>
+                <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-1">Verified By - Name</label>
                   <input
                     type="text"
@@ -1068,7 +1079,7 @@ function App() {
                     </div>
 
                     <div className="data-fields">
-                      <div className="field-row"><span className="field-label">PRN</span><span className="field-colon">:</span><span className="field-value">{getFieldValue(selectedRecord, ['prn']) || '___________'}</span></div>
+                      <div className="field-row"><span className="field-label">PRN</span><span className="field-colon">:</span><span className="field-value">{printData.prn || '___________'}</span></div>
                       <div className="field-row"><span className="field-label">LCR Registry Number</span><span className="field-colon">:</span><span className="field-value">{getFieldValue(selectedRecord, ['lcr', 'registry']) || '___________'}</span></div>
                       <div className="field-row"><span className="field-label">Date of Registration</span><span className="field-colon">:</span><span className="field-value">{getFieldValue(selectedRecord, ['date of registration']) || '___________'}</span></div>
                       <div className="field-row"><span className="field-label">Name of Child</span><span className="field-colon">:</span><span className="field-value">{getFieldValue(selectedRecord, ['name of child']) || '___________'}</span></div>
