@@ -1050,7 +1050,7 @@ function App() {
                     </div>
 
                     <div className="print-broken-line"></div>
-
+                    
                     <div className="birth-available">
                       <p className="text-2xl font-bold uppercase">Birth Available</p>
                     </div>
@@ -1086,12 +1086,18 @@ function App() {
                     <div className="certification-statement mt-3">This certification is issued to <strong className="underline-text">{printData.issuedTo || '___________'}</strong> upon his/her request.</div>
 
                     <div className="signature-section mt-6">
-                      <div className="verified-label">Verified by:</div>
-                      <div className="signature-name">{printData.verifiedName || '____________________'}</div>
-                      <div className="signature-title">{printData.verifiedTitle || '____________________'}</div>
-                      <div className="signature-empty"></div>
-                      <div className="signature-name">{printData.assistantName || '____________________'}</div>
-                      <div className="signature-title">{printData.assistantTitle || '____________________'}</div>
+                      <div className="signature-first-person">
+                        <div className="sig-name">{printData.assistantName || '____________________'}</div>
+                        <div className="sig-title">{printData.assistantTitle || '____________________'}</div>
+                      </div>
+                      
+                      <div className="signature-verified-section">
+                        <div className="verified-label">Verified by:</div>
+                        <div className="signature-second-person">
+                          <div className="sig-name">{printData.verifiedName || '____________________'}</div>
+                          <div className="sig-title">{printData.verifiedTitle || '____________________'}</div>
+                        </div>
+                      </div>
                     </div>
 
                     <div className="or-info mt-6">
