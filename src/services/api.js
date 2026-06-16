@@ -41,11 +41,11 @@ class LCRAPI {
   }
 
   async getAllSheets() {
-    return this.request('/?all=true', 'GET');
+    return this.request('?all=true', 'GET');
   }
 
   async getSheetData(sheetName) {
-    return this.request(`/?sheetName=${encodeURIComponent(sheetName)}`, 'GET');
+    return this.request(`?sheetName=${encodeURIComponent(sheetName)}`, 'GET');
   }
 
   async addRecord(sheetName, record) {
