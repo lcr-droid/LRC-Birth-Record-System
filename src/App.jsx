@@ -173,7 +173,9 @@ function App() {
   };
 
   const handlePrintInputChange = (field, value) => {
-    setPrintData({ ...printData, [field]: value });
+    const uppercaseFields = ['verifiedName', 'verifiedTitle', 'assistantName', 'assistantTitle'];
+    const formattedValue = uppercaseFields.includes(field) ? value.toUpperCase() : value;
+    setPrintData({ ...printData, [field]: formattedValue });
   };
 
   const generatePDF = () => {
@@ -1061,7 +1063,7 @@ function App() {
 
                     <div className="certify-statement mb-3">
                       <p className="font-semibold">WE CERTIFY</p>
-                      <p className="mt-1">that, among others, the following facts of birth appear in our Register of Births on Page <strong>{printData.pageNumber || '___'}</strong> of book number <strong>{printData.bookNumber || '___'}</strong>:</p>
+                      <p className="mt-1">that, among others, the following facts of birth appear in our Register of Births on Page <strong className="underline-text">{printData.pageNumber || '___'}</strong> of book number <strong className="underline-text">{printData.bookNumber || '___'}</strong>:</p>
                     </div>
 
                     <div className="data-fields">
@@ -1080,16 +1082,19 @@ function App() {
                       <div className="field-row"><span className="field-label">Place of Marriage of Parents</span><span className="field-colon">:</span><span className="field-value">{getFieldValue(selectedRecord, ['place of marriage']) || '___________'}</span></div>
                     </div>
 
-                    <div className="certification-statement mt-3">This certification is issued to <strong>{printData.issuedTo || '___________'}</strong> upon his/her request.</div>
+                    <div className="certification-statement mt-3">This certification is issued to <strong className="underline-text">{printData.issuedTo || '___________'}</strong> upon his/her request.</div>
 
                     <div className="signature-section mt-6">
-                      <div className="verified-by">
-                        <div className="name" style={{ textDecoration: 'underline' }}>{printData.verifiedName || '____________________'}</div>
-                        <div className="title">{printData.verifiedTitle || '____________________'}</div>
-                      </div>
-                      <div className="asst-officer">
-                        <div className="name" style={{ textDecoration: 'underline' }}>{printData.assistantName || '____________________'}</div>
-                        <div className="title">{printData.assistantTitle || '____________________'}</div>
+                      <div className="verified-label">Verified by:</div>
+                      <div className="verified-entries">
+                        <div className="entry">
+                          <div className="name">{printData.verifiedName || '____________________'}</div>
+                          <div className="title">{printData.verifiedTitle || '____________________'}</div>
+                        </div>
+                        <div className="entry">
+                          <div className="name">{printData.assistantName || '____________________'}</div>
+                          <div className="title">{printData.assistantTitle || '____________________'}</div>
+                        </div>
                       </div>
                     </div>
 
