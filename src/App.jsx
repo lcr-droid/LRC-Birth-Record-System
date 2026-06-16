@@ -1008,148 +1008,130 @@ function App() {
               {/* Certificate Preview - NO BORDER, LEGAL SIZE */}
               <div className="border-t border-gray-200 pt-4">
                 <h3 className="text-lg font-semibold text-gray-800 mb-4">Preview</h3>
-                <div ref={printRef} className="relative bg-white shadow-lg overflow-hidden" style={{ fontFamily: "'Times New Roman', serif", width: '100%', minHeight: '650px' }}>
+                <div ref={printRef} id="print-certificate" className="relative bg-white overflow-hidden certificate-print-page mx-auto" style={{ fontFamily: "'Times New Roman', serif", width: '8.5in', minHeight: '13in' }}>
                   {/* Background Image */}
-                  <div className="absolute inset-0 opacity-10 pointer-events-none">
-                    <img src="/bg_image.png" alt="Background" className="w-full h-full object-cover" />
-                  </div>
-                 
+                  <div className="absolute inset-0 certificate-bg opacity-10 pointer-events-none"></div>
+
                   {/* Content - TIGHTER MARGINS */}
-                  <div className="relative pt-8 pb-6 px-6 z-10">
-                    {/* LCR Form No. 1A - LEFT ALIGNED */}
-                    <div className="mb-1">
-                      <p className="text-sm font-bold">LCR Form No. 1A</p>
-                      <p className="text-sm italic">(Birth – Available)</p>
-                    </div>
-
-                    <div className="border-b border-dotted border-black w-full mt-1"></div>
-
-                    {/* OFFICE HEADER - CENTERED BOLD */}
-                    <div className="text-center mt-3 mb-2">
-                      <h1 className="text-xl font-bold uppercase">OFFICE OF THE MUNICIPAL CIVIL REGISTRAR</h1>
-                    </div>
-
-                    {/* BIRTH AVAILABLE - CENTERED BOLD */}
-                    <div className="text-center mb-4">
-                      <h2 className="text-lg font-bold uppercase">BIRTH AVAILABLE</h2>
-                    </div>
-
-                    {/* Date on the right with "Date" below */}
-                    <div className="flex justify-end mb-4">
-                      <div className="text-right">
-                        <p className="text-base">
-                          {printData.date ? new Date(printData.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }).toUpperCase() : '___________'}
-                        </p>
-                        <p className="text-xs">Date</p>
-                      </div>
-                    </div>
-
-                    {/* WE CERTIFY statement */}
-                    <div className="mb-3">
-                      <p className="text-sm">
-                        WE CERTIFY that, among others the following facts of Birth appear in our Register of Births on Page <strong>{printData.pageNumber || '___'}</strong> of book number <strong>{printData.bookNumber || '___'}</strong>:
-                      </p>
-                    </div>
-
-                    {/* Data fields - table format with colons */}
-                    <div className="space-y-0.5 text-sm mb-5">
-                      <div className="flex">
-                        <span className="w-52">PRN</span>
-                        <span className="w-4">:</span>
-                        <span className="flex-1 ml-2">{getFieldValue(selectedRecord, ['prn']) || '___________'}</span>
-                      </div>
-                      <div className="flex">
-                        <span className="w-52">LCR Registry Number</span>
-                        <span className="w-4">:</span>
-                        <span className="flex-1 ml-2">{getFieldValue(selectedRecord, ['lcr', 'registry']) || '___________'}</span>
-                      </div>
-                      <div className="flex">
-                        <span className="w-52">Date of Registration</span>
-                        <span className="w-4">:</span>
-                        <span className="flex-1 ml-2">{getFieldValue(selectedRecord, ['date of registration']) || '___________'}</span>
-                      </div>
-                      <div className="flex">
-                        <span className="w-52">Name of Child</span>
-                        <span className="w-4">:</span>
-                        <span className="flex-1 ml-2">{getFieldValue(selectedRecord, ['name of child']) || '___________'}</span>
-                      </div>
-                      <div className="flex">
-                        <span className="w-52">Sex</span>
-                        <span className="w-4">:</span>
-                        <span className="flex-1 ml-2">{getFieldValue(selectedRecord, ['sex', 'gender']) || '___________'}</span>
-                      </div>
-                      <div className="flex">
-                        <span className="w-52">Date of Birth</span>
-                        <span className="w-4">:</span>
-                        <span className="flex-1 ml-2">{getFieldValue(selectedRecord, ['date of birth']) || '___________'}</span>
-                      </div>
-                      <div className="flex">
-                        <span className="w-52">Place of Birth</span>
-                        <span className="w-4">:</span>
-                        <span className="flex-1 ml-2">{getFieldValue(selectedRecord, ['place of birth']) || '___________'}</span>
-                      </div>
-                      <div className="flex">
-                        <span className="w-52">Name of Mother</span>
-                        <span className="w-4">:</span>
-                        <span className="flex-1 ml-2">{getFieldValue(selectedRecord, ['name of mother']) || '___________'}</span>
-                      </div>
-                      <div className="flex">
-                        <span className="w-52">Nationality</span>
-                        <span className="w-4">:</span>
-                        <span className="flex-1 ml-2">FILIPINO</span>
-                      </div>
-                      <div className="flex">
-                        <span className="w-52">Name of Father</span>
-                        <span className="w-4">:</span>
-                        <span className="flex-1 ml-2">{getFieldValue(selectedRecord, ['name of father']) || '___________'}</span>
-                      </div>
-                      <div className="flex">
-                        <span className="w-52">Nationality</span>
-                        <span className="w-4">:</span>
-                        <span className="flex-1 ml-2">FILIPINO</span>
-                      </div>
-                      <div className="flex">
-                        <span className="w-52">Date of Marriage of Parents</span>
-                        <span className="w-4">:</span>
-                        <span className="flex-1 ml-2">{getFieldValue(selectedRecord, ['date of marriage']) || '___________'}</span>
-                      </div>
-                      <div className="flex">
-                        <span className="w-52">Place of Marriage of Parents</span>
-                        <span className="w-4">:</span>
-                        <span className="flex-1 ml-2">{getFieldValue(selectedRecord, ['place of marriage']) || '___________'}</span>
-                      </div>
-                    </div>
-
-                    {/* THIS CERTIFICATION statement */}
-                    <div className="mb-4">
-                      <p className="text-sm">
-                        THIS CERTIFICATION is issued to <strong>{printData.issuedTo || '___________'}</strong> upon his/her request.
-                      </p>
-                    </div>
-
-                    {/* Signature Section - ASST on RIGHT, Verified by on LEFT */}
-                    <div className="flex justify-between items-start mb-4">
-                      <div className="text-left">
-                        <p className="text-sm font-bold mb-1">Verified by:</p>
-                        <p className="font-bold text-sm">{printData.municipalCivilRegistrar || '____________________'}</p>
-                        <p className="text-sm font-bold">CLERK III</p>
+                  <div className="relative p-10 text-black">
+                    <div className="flex justify-between items-start mb-6">
+                      <div>
+                        <p className="text-sm font-semibold uppercase tracking-[0.2em]">LCR Form No. 1A</p>
+                        <p className="text-xs italic mt-1">(Birth – Available)</p>
                       </div>
                       <div className="text-right">
-                        <p className="font-bold text-sm">{printData.asstRegistrationOfficer || '____________________'}</p>
-                        <p className="text-sm font-bold">ASST. REGISTRATION OFFICER</p>
+                        <p className="text-sm font-semibold uppercase">Date</p>
+                        <p className="text-base uppercase">{printData.date ? new Date(printData.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }).toUpperCase() : '___________'}</p>
                       </div>
                     </div>
 
-                    {/* O.R. Information */}
-                    <div className="space-y-0.5 text-sm mb-3">
-                      <p><span className="font-bold">O.R Number:</span> {printData.orNumber || '___________'}</p>
-                      <p><span className="font-bold">Amount Paid:</span> {printData.amountPaid ? printData.amountPaid : '___________'}</p>
-                      <p><span className="font-bold">Date Paid:</span> {printData.datePaid ? new Date(printData.datePaid).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }).toUpperCase() : '___________'}</p>
+                    <div className="text-center mb-6">
+                      <p className="text-lg font-bold uppercase tracking-[0.3em]">Office of the Municipal Civil Registrar</p>
+                      <p className="text-2xl font-bold uppercase mt-3">Birth Available</p>
                     </div>
 
-                    {/* NOTE */}
-                    <div className="mt-3 text-xs italic">
-                      <p>NOTE: This Certification is not valid if the mark of issuance or allotment of any entry</p>
+                    <div className="border-t border-black/80 mb-6"></div>
+
+                    <div className="mb-5 text-sm leading-7">
+                      <p className="font-semibold uppercase">WE CERTIFY</p>
+                      <p className="mt-1">that, among others, the following facts of birth appear in our Register of Births on Page <strong>{printData.pageNumber || '___'}</strong> of book number <strong>{printData.bookNumber || '___'}</strong>:</p>
+                    </div>
+
+                    <div className="grid gap-2 text-sm">
+                      <div className="flex">
+                        <span className="w-56 font-semibold">PRN</span>
+                        <span className="w-4">:</span>
+                        <span className="ml-2">{getFieldValue(selectedRecord, ['prn']) || '___________'}</span>
+                      </div>
+                      <div className="flex">
+                        <span className="w-56 font-semibold">LCR Registry Number</span>
+                        <span className="w-4">:</span>
+                        <span className="ml-2">{getFieldValue(selectedRecord, ['lcr', 'registry']) || '___________'}</span>
+                      </div>
+                      <div className="flex">
+                        <span className="w-56 font-semibold">Date of Registration</span>
+                        <span className="w-4">:</span>
+                        <span className="ml-2">{getFieldValue(selectedRecord, ['date of registration']) || '___________'}</span>
+                      </div>
+                      <div className="flex">
+                        <span className="w-56 font-semibold">Name of Child</span>
+                        <span className="w-4">:</span>
+                        <span className="ml-2">{getFieldValue(selectedRecord, ['name of child']) || '___________'}</span>
+                      </div>
+                      <div className="flex">
+                        <span className="w-56 font-semibold">Sex</span>
+                        <span className="w-4">:</span>
+                        <span className="ml-2">{getFieldValue(selectedRecord, ['sex', 'gender']) || '___________'}</span>
+                      </div>
+                      <div className="flex">
+                        <span className="w-56 font-semibold">Date of Birth</span>
+                        <span className="w-4">:</span>
+                        <span className="ml-2">{getFieldValue(selectedRecord, ['date of birth']) || '___________'}</span>
+                      </div>
+                      <div className="flex">
+                        <span className="w-56 font-semibold">Place of Birth</span>
+                        <span className="w-4">:</span>
+                        <span className="ml-2">{getFieldValue(selectedRecord, ['place of birth']) || '___________'}</span>
+                      </div>
+                      <div className="flex">
+                        <span className="w-56 font-semibold">Name of Mother</span>
+                        <span className="w-4">:</span>
+                        <span className="ml-2">{getFieldValue(selectedRecord, ['name of mother']) || '___________'}</span>
+                      </div>
+                      <div className="flex">
+                        <span className="w-56 font-semibold">Nationality</span>
+                        <span className="w-4">:</span>
+                        <span className="ml-2">FILIPINO</span>
+                      </div>
+                      <div className="flex">
+                        <span className="w-56 font-semibold">Name of Father</span>
+                        <span className="w-4">:</span>
+                        <span className="ml-2">{getFieldValue(selectedRecord, ['name of father']) || '___________'}</span>
+                      </div>
+                      <div className="flex">
+                        <span className="w-56 font-semibold">Nationality</span>
+                        <span className="w-4">:</span>
+                        <span className="ml-2">FILIPINO</span>
+                      </div>
+                      <div className="flex">
+                        <span className="w-56 font-semibold">Date of Marriage of Parents</span>
+                        <span className="w-4">:</span>
+                        <span className="ml-2">{getFieldValue(selectedRecord, ['date of marriage']) || '___________'}</span>
+                      </div>
+                      <div className="flex">
+                        <span className="w-56 font-semibold">Place of Marriage of Parents</span>
+                        <span className="w-4">:</span>
+                        <span className="ml-2">{getFieldValue(selectedRecord, ['place of marriage']) || '___________'}</span>
+                      </div>
+                    </div>
+
+                    <div className="mt-6 text-sm">
+                      <p>This certification is issued to <strong>{printData.issuedTo || '___________'}</strong> upon his/her request.</p>
+                    </div>
+
+                    <div className="mt-10 grid gap-8 md:grid-cols-2">
+                      <div>
+                        <p className="text-sm font-semibold uppercase mb-2">Verified by</p>
+                        <div className="h-16 border-b border-black mb-3"></div>
+                        <p className="font-bold uppercase">{printData.municipalCivilRegistrar || '____________________'}</p>
+                        <p className="text-sm font-semibold">CLERK III</p>
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold uppercase mb-2">Asst. Registration Officer</p>
+                        <div className="h-16 border-b border-black mb-3"></div>
+                        <p className="font-bold uppercase">{printData.asstRegistrationOfficer || '____________________'}</p>
+                        <p className="text-sm font-semibold">ASST. REGISTRATION OFFICER</p>
+                      </div>
+                    </div>
+
+                    <div className="mt-8 text-sm space-y-1">
+                      <p><span className="font-semibold">O.R. Number:</span> {printData.orNumber || '___________'}</p>
+                      <p><span className="font-semibold">Amount Paid:</span> {printData.amountPaid || '___________'}</p>
+                      <p><span className="font-semibold">Date Paid:</span> {printData.datePaid ? new Date(printData.datePaid).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }).toUpperCase() : '___________'}</p>
+                    </div>
+
+                    <div className="mt-10 text-xs italic">
+                      <p>NOTE: This certification is not valid if the mark of issuance or allotment of any entry is altered.</p>
                     </div>
                   </div>
                 </div>
