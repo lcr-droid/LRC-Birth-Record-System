@@ -77,14 +77,8 @@
   }
 }
 
-/* Certificate background */
-.certificate-bg {
-  background-image: url('/bg_image.png');
-  background-repeat: no-repeat;
-  background-position: center bottom;
-  background-size: contain;
-  opacity: 0.05;
-}
+/* Certificate background (image element used for better control) */
+.certificate-bg { }
 
 .certificate-print-page {
   box-shadow: none !important;
@@ -94,8 +88,10 @@
 
 /* Ensure images used as lines scale to page width when printing */
 .print-broken-line {
-  width: 100%;
+  width: 80%;
   height: auto;
+  display: block;
+  margin: 0.5rem auto 0.75rem auto;
   object-fit: contain;
 }
 
@@ -105,9 +101,7 @@
   max-width: 100%;
   background: white;
   position: relative;
-  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.18);
   margin: 0 auto;
-  border: 1px solid #555;
   page-break-inside: avoid;
   break-inside: avoid;
 }
@@ -124,15 +118,18 @@
 
 .certificate-bg img {
   width: 100%;
-  height: 100%;
-  object-fit: contain;
+  height: auto;
+  position: absolute;
+  left: 0;
+  bottom: 0;
   display: block;
+  opacity: 0.03; /* very light watermark */
 }
 
 .certificate-content {
   position: relative;
   z-index: 1;
-  padding: 0.75in 0.85in;
+  padding: 1.2in 0.85in 0.6in; /* extra top padding to avoid header/date clipping */
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
@@ -180,7 +177,7 @@
 
 @media print {
   .certificate { box-shadow: none; margin: 0; width: 100%; border: none; }
-  .certificate-content { padding: 0.4in 0.6in; }
+  .certificate-content { padding: 1.1in 0.6in 0.5in; }
   @page { size: legal; margin: 0.3in; }
 }
 
