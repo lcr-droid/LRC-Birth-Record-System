@@ -40,7 +40,7 @@ class LCRAPI {
   }
 
   async getSheetData(sheetName) {
-    return this.request(`/?sheetName=${encodeURIComponent(sheetName)}`, 'GET');
+    return this.request(`/data?sheetName=${encodeURIComponent(sheetName)}`, 'GET');
   }
 
   async addRecord(sheetName, record) {
