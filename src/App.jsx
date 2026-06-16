@@ -1010,7 +1010,7 @@ function App() {
                 <h3 className="text-lg font-semibold text-gray-800 mb-4">Preview</h3>
                 <div ref={printRef} id="print-certificate" className="relative bg-white overflow-hidden certificate-print-page mx-auto" style={{ fontFamily: "'Times New Roman', serif", width: '8.5in', minHeight: '13in' }}>
                   {/* Background Image */}
-                  <div className="absolute inset-0 certificate-bg opacity-10 pointer-events-none"></div>
+                  <div className="absolute inset-0 certificate-bg pointer-events-none"></div>
 
                   {/* Content - TIGHTER MARGINS */}
                   <div className="relative p-10 text-black">
@@ -1030,7 +1030,7 @@ function App() {
                       <p className="text-2xl font-bold uppercase mt-3">Birth Available</p>
                     </div>
 
-                    <div className="border-t border-black/80 mb-6"></div>
+                    <img src="/broken_line.png" alt="divider" className="print-broken-line mb-6" />
 
                     <div className="mb-5 text-sm leading-7">
                       <p className="font-semibold uppercase">WE CERTIFY</p>
