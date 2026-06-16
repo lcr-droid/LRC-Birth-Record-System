@@ -52,28 +52,29 @@
 
 /* Print styles */
 @media print {
-  body {
-    background: white !important;
-    color: black !important;
-  }
-  body * {
-    visibility: hidden;
-  }
-  #print-certificate, #print-certificate * {
-    visibility: visible;
-  }
-  #print-certificate {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
+  .certificate {
     margin: 0;
     padding: 0;
-    background: white;
+    width: 100%;
   }
+  
+  .certificate-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+  
+  .certificate-bg img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
   @page {
     size: legal;
-    margin: 0.3in;
+    margin: 0;
   }
 }
 
