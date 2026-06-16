@@ -1049,11 +1049,12 @@ function App() {
                       <p className="text-lg font-bold uppercase tracking-[0.3em]">Office of the Municipal Civil Registrar</p>
                     </div>
 
+                    <div className="print-broken-line"></div>
+
                     <div className="birth-available">
                       <p className="text-2xl font-bold uppercase">Birth Available</p>
                     </div>
 
-                    <div className="print-broken-line"></div>
 
                     <div className="date-section">
                       <div className="date-box">
@@ -1086,16 +1087,11 @@ function App() {
 
                     <div className="signature-section mt-6">
                       <div className="verified-label">Verified by:</div>
-                      <div className="verified-entries">
-                        <div className="entry">
-                          <div className="name">{printData.verifiedName || '____________________'}</div>
-                          <div className="title">{printData.verifiedTitle || '____________________'}</div>
-                        </div>
-                        <div className="entry">
-                          <div className="name">{printData.assistantName || '____________________'}</div>
-                          <div className="title">{printData.assistantTitle || '____________________'}</div>
-                        </div>
-                      </div>
+                      <div className="signature-name">{printData.verifiedName || '____________________'}</div>
+                      <div className="signature-title">{printData.verifiedTitle || '____________________'}</div>
+                      <div className="signature-empty"></div>
+                      <div className="signature-name">{printData.assistantName || '____________________'}</div>
+                      <div className="signature-title">{printData.assistantTitle || '____________________'}</div>
                     </div>
 
                     <div className="or-info mt-6">
