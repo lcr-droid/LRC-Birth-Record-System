@@ -34,8 +34,10 @@ function App() {
     pageNumber: '',
     bookNumber: '',
     issuedTo: '',
-    asstRegistrationOfficer: '',
-    municipalCivilRegistrar: '',
+    verifiedName: '',
+    verifiedTitle: '',
+    assistantName: '',
+    assistantTitle: '',
     orNumber: '',
     amountPaid: '',
     datePaid: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
@@ -955,23 +957,43 @@ function App() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">Asst. Registration Officer</label>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">Verified By - Name</label>
                   <input
                     type="text"
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    value={printData.asstRegistrationOfficer}
-                    onChange={(e) => handlePrintInputChange('asstRegistrationOfficer', e.target.value)}
+                    value={printData.verifiedName}
+                    onChange={(e) => handlePrintInputChange('verifiedName', e.target.value)}
+                    placeholder="e.g., EMMA CULTURA SALON"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">Verified By - Position</label>
+                  <input
+                    type="text"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    value={printData.verifiedTitle}
+                    onChange={(e) => handlePrintInputChange('verifiedTitle', e.target.value)}
+                    placeholder="e.g., CLERK III"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">Assistant - Name</label>
+                  <input
+                    type="text"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    value={printData.assistantName}
+                    onChange={(e) => handlePrintInputChange('assistantName', e.target.value)}
                     placeholder="e.g., VANISSA RATILLA GASTA"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">Clerk III</label>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">Assistant - Position</label>
                   <input
                     type="text"
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    value={printData.municipalCivilRegistrar}
-                    onChange={(e) => handlePrintInputChange('municipalCivilRegistrar', e.target.value)}
-                    placeholder="e.g., EMMA CULTURA SALON"
+                    value={printData.assistantTitle}
+                    onChange={(e) => handlePrintInputChange('assistantTitle', e.target.value)}
+                    placeholder="e.g., ASST. REGISTRATION OFFICER"
                   />
                 </div>
                 <div>
@@ -1029,7 +1051,7 @@ function App() {
                       <p className="text-2xl font-bold uppercase">Birth Available</p>
                     </div>
 
-                    <div className="print-broken-line" aria-hidden="true"></div>
+                    <div className="print-broken-line"></div>
 
                     <div className="date-section">
                       <div className="date-box">
@@ -1062,12 +1084,12 @@ function App() {
 
                     <div className="signature-section mt-6">
                       <div className="verified-by">
-                        <div className="name" style={{ textDecoration: 'underline' }}>{printData.municipalCivilRegistrar || '____________________'}</div>
-                        <div className="title">CLERK III</div>
+                        <div className="name" style={{ textDecoration: 'underline' }}>{printData.verifiedName || '____________________'}</div>
+                        <div className="title">{printData.verifiedTitle || '____________________'}</div>
                       </div>
                       <div className="asst-officer">
-                        <div className="name" style={{ textDecoration: 'underline' }}>{printData.asstRegistrationOfficer || '____________________'}</div>
-                        <div className="title">ASST. REGISTRATION OFFICER</div>
+                        <div className="name" style={{ textDecoration: 'underline' }}>{printData.assistantName || '____________________'}</div>
+                        <div className="title">{printData.assistantTitle || '____________________'}</div>
                       </div>
                     </div>
 
