@@ -77,25 +77,10 @@
   }
 }
 
-/* Certificate background (image element used for better control) */
-.certificate-bg { }
-
-.certificate-print-page {
-  box-shadow: none !important;
-  border: none !important;
-  background-clip: padding-box;
-}
-
-/* Ensure images used as lines scale to page width when printing */
-.print-broken-line {
-  width: 80%;
-  opacity: 1; /* show full watermark */
-  display: block;
-  margin: 0.5rem auto 0.75rem auto;
-  object-fit: contain;
-}
+/* Certificate Container - Legal Size */
 .certificate {
   width: 8.5in;
+  max-width: 100%;
   background: white;
   position: relative;
   margin: 0 auto;
@@ -106,83 +91,257 @@
   overflow: visible;
 }
 
+/* Background Image - Fixed to not cut off edges */
 .certificate-bg {
   position: absolute;
   top: 0;
   left: 0;
+  right: 0;
+  bottom: 0;
   width: 100%;
   height: 100%;
   pointer-events: none;
   z-index: 0;
+  overflow: hidden;
 }
 
 .certificate-bg img {
   width: 100%;
-  height: auto;
-  object-fit: contain; /* show full image without cropping */
-  object-position: top center; /* align header to top center */
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  margin: 0 auto;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
   display: block;
   pointer-events: none;
 }
 
+/* Content Area - Balanced left and right margins */
 .certificate-content {
   position: relative;
   z-index: 1;
-  padding: 1.4in 0.9in 0.6in; /* increased top and symmetric left/right padding */
+  padding: 0.8in 0.9in 0.5in;
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 0.6rem;
 }
 
-.form-number { margin-bottom: 0.25rem; margin-top: 0.25rem; padding-top: 0.18in; }
-.form-number p { font-size: 13px; letter-spacing: 0.5px; }
-.form-number .bold { font-weight: bold; }
-.form-number .italic { font-style: italic; }
+/* LCR Form Number */
+.form-number {
+  margin-bottom: 0.15rem;
+  margin-top: 0;
+  padding-top: 0;
+}
 
-.office-header { text-align: center; margin-bottom: 0.5rem; }
-.office-header h1 { font-size: 20px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; line-height: 1.2; }
+.form-number p {
+  font-size: 13px;
+  letter-spacing: 0.5px;
+}
 
-.dotted-line { width: 100%; margin: 0.5rem 0 0.85rem; }
+.form-number .bold {
+  font-weight: bold;
+}
 
-.birth-available { text-align: center; margin-bottom: 0.75rem; }
-.birth-available h2 { font-size: 18px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
+.form-number .italic {
+  font-style: italic;
+}
 
-.date-section { display: flex; justify-content: flex-end; margin-bottom: 0.75rem; }
-.date-box { text-align: right; }
-.date-box .date { font-size: 14px; font-weight: bold; letter-spacing: 0.5px; }
-.date-box .date-label { font-size: 10px; letter-spacing: 0.4px; }
+/* Office Header */
+.office-header {
+  text-align: center;
+  margin-bottom: 0.3rem;
+}
 
-.certify-statement p, .certification-statement p, .or-info p, .note p { font-size: 13px; line-height: 1.4; }
+.office-header h1 {
+  font-size: 20px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  line-height: 1.2;
+}
 
-.data-fields { display: grid; grid-template-columns: 1fr; gap: 0.35rem; margin-bottom: 1rem; }
-.field-row { display: flex; flex-wrap: wrap; gap: 0.5rem; font-size: 13px; align-items: baseline; }
-.field-label { min-width: 200px; max-width: 220px; font-weight: bold; }
-.field-colon { width: 12px; }
-.field-value { flex: 1; min-width: 180px; margin-left: 0; }
+/* Dotted Line */
+.dotted-line {
+  width: 100%;
+  margin: 0.3rem 0 0.5rem;
+}
 
-.signature-section { display: flex; justify-content: space-between; align-items: flex-start; gap: 1.5rem; margin-bottom: 1.2rem; flex-wrap: wrap; }
-.verified-by, .asst-officer { width: min(48%, 320px); display:flex; flex-direction: column; gap: 0.2rem; }
-.verified-by { text-align: left; align-items: flex-start; }
-.asst-officer { text-align: right; align-items: flex-end; }
-.verified-by .label, .asst-officer .label { font-size: 12px; font-weight: bold; }
-.verified-by .name, .asst-officer .name { font-size: 14px; font-weight: bold; }
-.verified-by .title, .asst-officer .title { font-size: 11px; letter-spacing: 0.5px; }
+/* Birth Available */
+.birth-available {
+  text-align: center;
+  margin-bottom: 0.5rem;
+}
 
-.or-info { margin-bottom: 1rem; display: grid; gap: 0.2rem; }
-.or-info .bold { font-weight: bold; }
+.birth-available h2 {
+  font-size: 18px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
 
-.note { margin-top: 0.75rem; }
-.note p { font-size: 15px; font-style: italic; font-weight: bold; }
+/* Date Section */
+.date-section {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 0.5rem;
+}
 
+.date-box {
+  text-align: right;
+}
+
+.date-box .date {
+  font-size: 14px;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+}
+
+.date-box .date-label {
+  font-size: 10px;
+  letter-spacing: 0.4px;
+}
+
+/* WE CERTIFY Statement */
+.certify-statement {
+  margin-bottom: 0.75rem;
+}
+
+.certify-statement p {
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.certification-statement p,
+.or-info p,
+.note p {
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+/* Data Fields */
+.data-fields {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.3rem;
+  margin-bottom: 0.75rem;
+}
+
+.field-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  font-size: 13px;
+  align-items: baseline;
+}
+
+.field-label {
+  min-width: 200px;
+  max-width: 220px;
+  font-weight: bold;
+}
+
+.field-colon {
+  width: 12px;
+}
+
+.field-value {
+  flex: 1;
+  min-width: 180px;
+  margin-left: 0;
+}
+
+/* Signature Section */
+.signature-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1.5rem;
+  margin-bottom: 0.8rem;
+  flex-wrap: wrap;
+}
+
+.verified-by,
+.asst-officer {
+  width: min(48%, 320px);
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.verified-by {
+  text-align: left;
+  align-items: flex-start;
+}
+
+.asst-officer {
+  text-align: right;
+  align-items: flex-end;
+}
+
+.verified-by .label,
+.asst-officer .label {
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.verified-by .name,
+.asst-officer .name {
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.verified-by .title,
+.asst-officer .title {
+  font-size: 11px;
+  letter-spacing: 0.5px;
+}
+
+/* OR Information */
+.or-info {
+  margin-bottom: 0.6rem;
+  display: grid;
+  gap: 0.15rem;
+}
+
+.or-info .bold {
+  font-weight: bold;
+}
+
+/* NOTE - Positioned inside the content area */
+.note {
+  margin-top: 0.5rem;
+  margin-bottom: 0;
+  page-break-inside: avoid;
+  page-break-before: avoid;
+  break-inside: avoid;
+}
+
+.note p {
+  font-size: 11px;
+  font-style: italic;
+  font-weight: normal;
+}
+
+/* Print specific overrides */
 @media print {
-  .certificate { box-shadow: none; margin: 0; width: 100%; border: none; }
-  .certificate-content { padding: 1.1in 0.6in 0.5in; }
-  @page { size: legal; margin: 0.3in; }
+  .certificate {
+    box-shadow: none;
+    margin: 0;
+    width: 100%;
+    border: none;
+  }
+  
+  .certificate-content {
+    padding: 0.5in 0.7in 0.4in;
+  }
+  
+  @page {
+    size: legal;
+    margin: 0.3in;
+  }
+  
+  .note {
+    margin-top: 0.3rem;
+    page-break-inside: avoid;
+  }
 }
 
 /* Custom scrollbar */
