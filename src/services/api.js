@@ -36,7 +36,7 @@ class LCRAPI {
   }
 
   async getAllSheets() {
-    return this.request('/?all=true', 'GET');
+    return this.request('/all', 'GET');
   }
 
   async getSheetData(sheetName) {
