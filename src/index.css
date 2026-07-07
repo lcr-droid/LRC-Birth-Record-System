@@ -259,6 +259,8 @@
   flex: 1;
   min-width: 180px;
   margin-left: 0;
+  font-size: 13px;
+  font-weight: bold;
 }
 
 /* Signature Section */
